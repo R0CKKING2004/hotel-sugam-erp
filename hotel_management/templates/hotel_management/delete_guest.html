@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Guest - Hotel Sugam ERP</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+        }
+
+        .main {
+            margin-left: 230px;
+            padding: 40px;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 230px;
+            height: 100vh;
+            background: #1f2937;
+            color: white;
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            padding: 25px 10px;
+        }
+
+        .menu a {
+            display: block;
+            color: #d1d5db;
+            text-decoration: none;
+            padding: 14px 25px;
+        }
+
+        .menu a:hover {
+            background: #374151;
+            color: white;
+        }
+
+        .delete-box {
+            max-width: 500px;
+            background: white;
+            padding: 35px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            color: #dc2626;
+        }
+
+        .warning {
+            color: #555;
+            margin-bottom: 25px;
+        }
+
+        .delete-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .cancel {
+            margin-left: 15px;
+            text-decoration: none;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="sidebar">
+
+    <div class="logo">
+        🏨 Hotel Sugam
+    </div>
+
+    <div class="menu">
+        <a href="/">🏠 Dashboard</a>
+        <a href="/rooms/">🛏️ Rooms</a>
+        <a href="/guests/">👤 Guests</a>
+        <a href="/admin/hotel_management/booking/">📅 Bookings</a>
+        <a href="#">🍽️ Restaurant</a>
+        <a href="#">💰 Billing</a>
+        <a href="#">👨‍💼 Staff</a>
+        <a href="#">📊 Reports</a>
+        <a href="/admin/">⚙️ Admin</a>
+    </div>
+
+</div>
+
+
+<div class="main">
+
+    <div class="delete-box">
+
+        <h1>Delete Guest</h1>
+
+        <p class="warning">
+            Are you sure you want to delete
+            <strong>{{ guest.name }}</strong>?
+        </p>
+
+        <p>
+            This action cannot be undone.
+        </p>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <button type="submit" class="delete-btn">
+                🗑️ Yes, Delete
+            </button>
+
+            <a href="/guests/" class="cancel">
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

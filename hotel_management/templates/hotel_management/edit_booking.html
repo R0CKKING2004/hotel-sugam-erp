@@ -1,0 +1,526 @@
+{% extends 'hotel_management/base.html' %}
+
+{% block title %}Edit Booking | Hotel Sugam{% endblock %}
+
+{% block page_title %}
+Edit Booking
+{% endblock %}
+
+{% block content %}
+
+<div class="section-header">
+    <div>
+        <h2>Edit Booking #{{ booking.id }}</h2>
+        <p>Update reservation details and booking status</p>
+    </div>
+
+    <a href="{% url 'bookings' %}" class="btn btn-dark">
+        ← Back to Bookings
+    </a>
+</div>
+
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="card"
+             style="margin-bottom:18px;
+                    border-color:rgba(255,80,80,0.18);
+                    color:#ff8f8f;">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+
+<div class="card" style="max-width:950px;">
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+
+        <!-- RESERVATION DETAILS -->
+
+        <div style="margin-bottom:25px;">
+
+            <h3 style="color:#ffffff;font-size:15px;margin-bottom:5px;">
+                Reservation Details
+            </h3>
+
+            <p style="color:#68766f;font-size:11px;margin-bottom:18px;">
+                Update the guest and room assigned to this reservation.
+            </p>
+
+
+            <div class="grid-2">
+
+                <div class="form-group">
+
+                    <label>Guest</label>
+
+                    <select name="guest" required>
+
+                        <option value="">
+                            Select Guest
+                        </option>
+
+                        {% for guest in guests %}
+
+                            <option
+                                value="{{ guest.id }}"
+                                {% if booking.guest.id == guest.id %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ guest.name }} — {{ guest.phone }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Room</label>
+
+                    <select name="room" required>
+
+                        <option value="">
+                            Select Room
+                        </option>
+
+                        {% for room in rooms %}
+
+                            <option
+                                value="{{ room.id }}"
+                                {% if booking.room.id == room.id %}
+                                    selected
+                                {% endif %}
+                            >
+                                Room {{ room.room_number }}
+                                —
+                                {{ room.room_type }}
+                                —
+                                ₹{{ room.price_per_night }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- STAY INFORMATION -->
+
+        <div style="margin-bottom:25px;">
+
+            <h3 style="color:#ffffff;font-size:15px;margin-bottom:5px;">
+                Stay Information
+            </h3>
+
+            <p style="color:#68766f;font-size:11px;margin-bottom:18px;">
+                Update the check-in and check-out dates.
+            </p>
+
+
+            <div class="grid-2">
+
+                <div class="form-group">
+
+                    <label>Check-in Date</label>
+
+                    <input
+                        type="date"
+                        name="check_in"
+                        value="{{ booking.check_in|date:'Y-m-d' }}"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Check-out Date</label>
+
+                    <input
+                        type="date"
+                        name="check_out"
+                        value="{{ booking.check_out|date:'Y-m-d' }}"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- BOOKING INFORMATION -->
+
+        <div style="margin-bottom:25px;">
+
+            <h3 style="color:#ffffff;font-size:15px;margin-bottom:5px;">
+                Booking Information
+            </h3>
+
+            <p style="color:#68766f;font-size:11px;margin-bottom:18px;">
+                Update the guest count and current reservation status.
+            </p>
+
+
+            <div class="grid-2">
+
+                <div class="form-group">
+
+                    <label>Number of Guests</label>
+
+                    <input
+                        type="number"
+                        name="number_of_guests"
+                        value="{{ booking.number_of_guests }}"
+                        min="1"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Booking Status</label>
+
+                    <select name="status" required>
+
+                        <option
+                            value="Confirmed"
+                            {% if booking.status == 'Confirmed' %}
+                                selected
+                            {% endif %}
+                        >
+                            Confirmed
+                        </option>
+
+                        <option
+                            value="Checked In"
+                            {% if booking.status == 'Checked In' %}
+                                selected
+                            {% endif %}
+                        >
+                            Checked In
+                        </option>
+
+                        <option
+                            value="Checked Out"
+                            {% if booking.status == 'Checked Out' %}
+                                selected
+                            {% endif %}
+                        >
+                            Checked Out
+                        </option>
+
+                        <option
+                            value="Cancelled"
+                            {% if booking.status == 'Cancelled' %}
+                                selected
+                            {% endif %}
+                        >
+                            Cancelled
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- CURRENT BOOKING SUMMARY -->
+
+        <div
+            style="
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:10px;
+                margin-bottom:25px;
+            "
+        >
+
+            <div
+                style="
+                    padding:14px;
+                    border-radius:12px;
+                    background:rgba(255,255,255,0.025);
+                    border:1px solid rgba(255,255,255,0.06);
+                "
+            >
+
+                <span
+                    style="
+                        display:block;
+                        color:#59675f;
+                        font-size:9px;
+                        text-transform:uppercase;
+                        letter-spacing:0.5px;
+                    "
+                >
+                    Booking ID
+                </span>
+
+                <strong
+                    style="
+                        display:block;
+                        color:#ffffff;
+                        font-size:14px;
+                        margin-top:5px;
+                    "
+                >
+                    #{{ booking.id }}
+                </strong>
+
+            </div>
+
+
+            <div
+                style="
+                    padding:14px;
+                    border-radius:12px;
+                    background:rgba(255,255,255,0.025);
+                    border:1px solid rgba(255,255,255,0.06);
+                "
+            >
+
+                <span
+                    style="
+                        display:block;
+                        color:#59675f;
+                        font-size:9px;
+                        text-transform:uppercase;
+                        letter-spacing:0.5px;
+                    "
+                >
+                    Current Guest
+                </span>
+
+                <strong
+                    style="
+                        display:block;
+                        color:#ffffff;
+                        font-size:13px;
+                        margin-top:5px;
+                    "
+                >
+                    {{ booking.guest.name }}
+                </strong>
+
+            </div>
+
+
+            <div
+                style="
+                    padding:14px;
+                    border-radius:12px;
+                    background:rgba(255,255,255,0.025);
+                    border:1px solid rgba(255,255,255,0.06);
+                "
+            >
+
+                <span
+                    style="
+                        display:block;
+                        color:#59675f;
+                        font-size:9px;
+                        text-transform:uppercase;
+                        letter-spacing:0.5px;
+                    "
+                >
+                    Current Room
+                </span>
+
+                <strong
+                    style="
+                        display:block;
+                        color:#ffffff;
+                        font-size:13px;
+                        margin-top:5px;
+                    "
+                >
+                    Room {{ booking.room.room_number }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- VALIDATION INFORMATION -->
+
+        <div
+            style="
+                display:flex;
+                gap:14px;
+                align-items:flex-start;
+                padding:16px;
+                margin-bottom:25px;
+                border-radius:12px;
+                background:rgba(0,255,136,0.04);
+                border:1px solid rgba(0,255,136,0.08);
+            "
+        >
+
+            <div
+                style="
+                    width:40px;
+                    height:40px;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    border-radius:10px;
+                    background:rgba(0,255,136,0.08);
+                    color:#00f586;
+                    font-size:18px;
+                    flex-shrink:0;
+                "
+            >
+                ✓
+            </div>
+
+
+            <div>
+
+                <strong
+                    style="
+                        display:block;
+                        color:#ffffff;
+                        font-size:12px;
+                    "
+                >
+                    Booking Validation
+                </strong>
+
+                <p
+                    style="
+                        margin-top:6px;
+                        color:#68766f;
+                        font-size:10px;
+                        line-height:1.7;
+                    "
+                >
+                    The system checks for overlapping reservations
+                    before saving changes. Maintenance rooms cannot
+                    be assigned to active reservations.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACTIONS -->
+
+        <div
+            style="
+                display:flex;
+                gap:10px;
+                flex-wrap:wrap;
+            "
+        >
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                ✓ Save Changes
+            </button>
+
+
+            <a
+                href="{% url 'bookings' %}"
+                class="btn btn-dark"
+            >
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<!-- DANGER ACTION -->
+
+<div
+    class="card"
+    style="
+        max-width:950px;
+        margin-top:20px;
+        border-color:rgba(255,80,80,0.10);
+    "
+>
+
+    <div
+        style="
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:15px;
+            flex-wrap:wrap;
+        "
+    >
+
+        <div>
+
+            <strong
+                style="
+                    display:block;
+                    color:#ffffff;
+                    font-size:13px;
+                "
+            >
+                Cancel this booking
+            </strong>
+
+            <p
+                style="
+                    margin-top:5px;
+                    color:#68766f;
+                    font-size:10px;
+                "
+            >
+                This will mark the reservation as cancelled
+                and make the room available when appropriate.
+            </p>
+
+        </div>
+
+
+        <a
+            href="{% url 'cancel_booking' booking.id %}"
+            class="btn"
+            style="
+                background:rgba(255,70,70,0.08);
+                border:1px solid rgba(255,70,70,0.15);
+                color:#ff8f8f;
+            "
+            onclick="return confirm('Are you sure you want to cancel this booking?');"
+        >
+            Cancel Booking
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

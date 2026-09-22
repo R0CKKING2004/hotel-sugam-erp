@@ -1,0 +1,759 @@
+{% extends 'hotel_management/base.html' %}
+
+{% block title %}Staff | Hotel Sugam{% endblock %}
+
+{% block page_title %}
+Staff Management
+{% endblock %}
+
+{% block content %}
+
+<!-- =========================
+     PAGE HEADER
+========================= -->
+
+<div class="section-header">
+
+    <div>
+        <h2>Staff Management</h2>
+
+        <p>
+            Manage hotel employees and staff information
+        </p>
+    </div>
+
+    <a href="{% url 'add_staff' %}"
+       class="btn btn-primary">
+
+        + Add Staff
+
+    </a>
+
+</div>
+
+
+<!-- =========================
+     STAFF SUMMARY
+========================= -->
+
+<div class="stats-grid">
+
+    <div class="card stat-card">
+
+        <div class="stat-top">
+
+            <span class="stat-label">
+                Total Staff
+            </span>
+
+            <div class="stat-icon">
+                👥
+            </div>
+
+        </div>
+
+        <div class="stat-value">
+            {{ staff_members|length }}
+        </div>
+
+        <div class="stat-sub">
+            Registered employees
+        </div>
+
+    </div>
+
+
+    <div class="card stat-card">
+
+        <div class="stat-top">
+
+            <span class="stat-label">
+                Management
+            </span>
+
+            <div class="stat-icon">
+                ★
+            </div>
+
+        </div>
+
+        <div class="stat-value">
+            HR
+        </div>
+
+        <div class="stat-sub">
+            Staff administration
+        </div>
+
+    </div>
+
+
+    <div class="card stat-card">
+
+        <div class="stat-top">
+
+            <span class="stat-label">
+                Workforce
+            </span>
+
+            <div class="stat-icon">
+                ✓
+            </div>
+
+        </div>
+
+        <div class="stat-value"
+             style="color:#00f586;">
+
+            Active
+
+        </div>
+
+        <div class="stat-sub">
+            Hotel operations
+        </div>
+
+    </div>
+
+
+    <div class="card stat-card">
+
+        <div class="stat-top">
+
+            <span class="stat-label">
+                Records
+            </span>
+
+            <div class="stat-icon">
+                #
+            </div>
+
+        </div>
+
+        <div class="stat-value">
+            ERP
+        </div>
+
+        <div class="stat-sub">
+            Centralized staff records
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     STAFF TABLE
+========================= -->
+
+<div class="card">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>
+                Staff Directory
+            </h2>
+
+            <p>
+                Employee information and employment details
+            </p>
+
+        </div>
+
+        <a href="{% url 'add_staff' %}"
+           class="btn btn-dark">
+
+            + New Staff
+
+        </a>
+
+    </div>
+
+
+    {% if staff_members %}
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Employee
+                    </th>
+
+                    <th>
+                        Contact
+                    </th>
+
+                    <th>
+                        Position
+                    </th>
+
+                    <th>
+                        Salary
+                    </th>
+
+                    <th>
+                        Joining Date
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                    <th>
+                        Actions
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for member in staff_members %}
+
+                <tr>
+
+                    <!-- EMPLOYEE -->
+
+                    <td>
+
+                        <div style="
+                            display:flex;
+                            align-items:center;
+                            gap:11px;
+                        ">
+
+                            <div style="
+                                width:42px;
+                                height:42px;
+
+                                display:flex;
+                                align-items:center;
+                                justify-content:center;
+
+                                border-radius:12px;
+
+                                background:
+                                linear-gradient(
+                                    135deg,
+                                    #00ff88,
+                                    #008f4c
+                                );
+
+                                color:#001b0d;
+
+                                font-size:15px;
+                                font-weight:800;
+
+                                box-shadow:
+                                0 0 15px
+                                rgba(0,255,136,0.12);
+                            ">
+
+                                {{ member.name|first|upper }}
+
+                            </div>
+
+
+                            <div>
+
+                                <strong style="
+                                    display:block;
+                                    color:#ffffff;
+                                    font-size:13px;
+                                ">
+
+                                    {{ member.name }}
+
+                                </strong>
+
+                                <span style="
+                                    display:block;
+                                    margin-top:3px;
+                                    color:#59675f;
+                                    font-size:10px;
+                                ">
+
+                                    Employee #{{ member.id }}
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </td>
+
+
+                    <!-- CONTACT -->
+
+                    <td>
+
+                        <div>
+
+                            <span style="
+                                display:block;
+                                color:#c3cdc8;
+                                font-size:11px;
+                            ">
+
+                                {{ member.phone }}
+
+                            </span>
+
+
+                            {% if member.email %}
+
+                            <span style="
+                                display:block;
+                                margin-top:4px;
+                                color:#68766f;
+                                font-size:10px;
+                            ">
+
+                                {{ member.email }}
+
+                            </span>
+
+                            {% else %}
+
+                            <span style="
+                                display:block;
+                                margin-top:4px;
+                                color:#4f5b55;
+                                font-size:10px;
+                            ">
+
+                                No email
+
+                            </span>
+
+                            {% endif %}
+
+                        </div>
+
+                    </td>
+
+
+                    <!-- POSITION -->
+
+                    <td>
+
+                        <span style="
+                            display:inline-flex;
+                            padding:7px 10px;
+
+                            border-radius:9px;
+
+                            background:
+                            rgba(0,255,136,0.07);
+
+                            border:
+                            1px solid
+                            rgba(0,255,136,0.08);
+
+                            color:#00e87e;
+
+                            font-size:11px;
+                            font-weight:600;
+                        ">
+
+                            {{ member.position }}
+
+                        </span>
+
+                    </td>
+
+
+                    <!-- SALARY -->
+
+                    <td>
+
+                        <strong style="
+                            color:#ffffff;
+                            font-size:12px;
+                        ">
+
+                            ₹{{ member.salary|floatformat:2 }}
+
+                        </strong>
+
+                        <span style="
+                            display:block;
+                            margin-top:3px;
+                            color:#59675f;
+                            font-size:9px;
+                        ">
+
+                            Monthly salary
+
+                        </span>
+
+                    </td>
+
+
+                    <!-- JOINING DATE -->
+
+                    <td>
+
+                        <span style="
+                            color:#aab7b0;
+                            font-size:11px;
+                        ">
+
+                            {{ member.joining_date|date:"d M Y" }}
+
+                        </span>
+
+                    </td>
+
+
+                    <!-- STATUS -->
+
+                    <td>
+
+                        {% if member.status == 'Active' %}
+
+                            <span class="badge badge-green">
+                                ● Active
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge badge-red">
+                                ● Inactive
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- ACTIONS -->
+
+                    <td>
+
+                        <div style="
+                            display:flex;
+                            gap:6px;
+                            align-items:center;
+                        ">
+
+                            <a href="{% url 'edit_staff' member.id %}"
+                               class="btn btn-dark"
+                               style="
+                                   padding:7px 10px;
+                                   font-size:10px;
+                               ">
+
+                                Edit
+
+                            </a>
+
+
+                            <a href="{% url 'delete_staff' member.id %}"
+                               class="btn btn-danger"
+                               style="
+                                   padding:7px 10px;
+                                   font-size:10px;
+                               "
+                               onclick="
+                                   return confirm(
+                                       'Are you sure you want to delete this staff member?'
+                                   );
+                               ">
+
+                                Delete
+
+                            </a>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    {% else %}
+
+    <!-- =========================
+         EMPTY STATE
+    ========================== -->
+
+    <div class="empty">
+
+        <div style="
+            width:70px;
+            height:70px;
+            margin:0 auto 15px;
+
+            display:flex;
+            align-items:center;
+            justify-content:center;
+
+            border-radius:20px;
+
+            background:
+                rgba(0,255,136,0.08);
+
+            border:
+                1px solid
+                rgba(0,255,136,0.10);
+
+            color:#00f586;
+
+            font-size:30px;
+        ">
+
+            👥
+
+        </div>
+
+
+        <strong style="
+            display:block;
+            color:#ffffff;
+            font-size:15px;
+            margin-bottom:7px;
+        ">
+
+            No Staff Records
+
+        </strong>
+
+
+        <span style="
+            display:block;
+            margin-bottom:18px;
+        ">
+
+            Add your first employee to the staff directory.
+
+        </span>
+
+
+        <a href="{% url 'add_staff' %}"
+           class="btn btn-primary">
+
+            + Add Staff
+
+        </a>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+
+<!-- =========================
+     STAFF MANAGEMENT FEATURES
+========================= -->
+
+<div style="margin-top:28px;">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>
+                Staff Management
+            </h2>
+
+            <p>
+                Employee administration features
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="grid-3">
+
+
+        <!-- EMPLOYEE RECORDS -->
+
+        <div class="card">
+
+            <div style="
+                width:45px;
+                height:45px;
+
+                display:flex;
+                align-items:center;
+                justify-content:center;
+
+                border-radius:12px;
+
+                background:
+                    rgba(0,255,136,0.08);
+
+                color:#00f586;
+
+                font-size:20px;
+
+                margin-bottom:15px;
+            ">
+
+                👤
+
+            </div>
+
+
+            <strong style="
+                color:#ffffff;
+                font-size:14px;
+            ">
+
+                Employee Records
+
+            </strong>
+
+
+            <p style="
+                margin-top:7px;
+                color:#68766f;
+                font-size:11px;
+                line-height:1.6;
+            ">
+
+                Maintain employee contact,
+                position and joining information.
+
+            </p>
+
+        </div>
+
+
+        <!-- SALARY -->
+
+        <div class="card">
+
+            <div style="
+                width:45px;
+                height:45px;
+
+                display:flex;
+                align-items:center;
+                justify-content:center;
+
+                border-radius:12px;
+
+                background:
+                    rgba(0,255,136,0.08);
+
+                color:#00f586;
+
+                font-size:20px;
+
+                margin-bottom:15px;
+            ">
+
+                ₹
+
+            </div>
+
+
+            <strong style="
+                color:#ffffff;
+                font-size:14px;
+            ">
+
+                Salary Information
+
+            </strong>
+
+
+            <p style="
+                margin-top:7px;
+                color:#68766f;
+                font-size:11px;
+                line-height:1.6;
+            ">
+
+                Store salary details for each
+                hotel employee.
+
+            </p>
+
+        </div>
+
+
+        <!-- STATUS -->
+
+        <div class="card">
+
+            <div style="
+                width:45px;
+                height:45px;
+
+                display:flex;
+                align-items:center;
+                justify-content:center;
+
+                border-radius:12px;
+
+                background:
+                    rgba(0,255,136,0.08);
+
+                color:#00f586;
+
+                font-size:20px;
+
+                margin-bottom:15px;
+            ">
+
+                ✓
+
+            </div>
+
+
+            <strong style="
+                color:#ffffff;
+                font-size:14px;
+            ">
+
+                Staff Status
+
+            </strong>
+
+
+            <p style="
+                margin-top:7px;
+                color:#68766f;
+                font-size:11px;
+                line-height:1.6;
+            ">
+
+                Track whether employees are
+                currently active or inactive.
+
+            </p>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+{% endblock %}

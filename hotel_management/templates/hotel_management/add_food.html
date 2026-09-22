@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Place Food Order - Hotel Sugam ERP</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+        }
+
+        .header {
+            background: #1f2937;
+            color: white;
+            padding: 20px 30px;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .container {
+            width: 500px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #1f2937;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .food-name {
+            background: #f3f4f6;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            margin-top: 20px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 11px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+        }
+
+        .back {
+            margin-left: 10px;
+            color: #555;
+            text-decoration: none;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="header">
+
+        <h1>
+            Hotel Sugam ERP
+        </h1>
+
+    </div>
+
+
+    <div class="container">
+
+        <h2>
+            Place Food Order
+        </h2>
+
+
+        <div class="food-name">
+
+            <strong>
+                Food:
+            </strong>
+
+            {{ food.name }}
+
+            <br>
+
+            <strong>
+                Price:
+            </strong>
+
+            ₹{{ food.price }}
+
+        </div>
+
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+
+            <label>
+                Booking
+            </label>
+
+            <select name="booking">
+
+                <option value="">
+                    -- Select Booking --
+                </option>
+
+                {% for booking in bookings %}
+
+                    <option value="{{ booking.id }}">
+
+                        {{ booking.guest.name }}
+                        - Room {{ booking.room.room_number }}
+
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+
+            <label>
+                Quantity
+            </label>
+
+            <input
+                type="number"
+                name="quantity"
+                value="1"
+                min="1"
+                required
+            >
+
+
+            <button
+                type="submit"
+                class="btn"
+            >
+                Place Order
+            </button>
+
+
+            <a
+                href="{% url 'restaurant' %}"
+                class="back"
+            >
+                Back to Restaurant
+            </a>
+
+        </form>
+
+    </div>
+
+</body>
+
+</html>

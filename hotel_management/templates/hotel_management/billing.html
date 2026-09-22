@@ -1,0 +1,1163 @@
+{% extends 'hotel_management/base.html' %}
+
+{% block title %}Billing{% endblock %}
+
+{% block page_title %}Billing & Invoices{% endblock %}
+
+{% block content %}
+
+<style>
+
+/* =====================================================
+   BILLING PAGE
+===================================================== */
+
+.billing-page {
+    width: 100%;
+}
+
+/* =====================================================
+   PAGE HEADER
+===================================================== */
+
+.page-header {
+    margin-bottom: 28px;
+}
+
+.page-header h2 {
+    margin: 0 0 6px;
+    font-size: 28px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.page-header p {
+    margin: 0;
+    color: #999999;
+}
+
+/* =====================================================
+   STATISTICS
+===================================================== */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 28px;
+}
+
+.stat-card {
+    background: linear-gradient(
+        145deg,
+        #151515,
+        #090909
+    );
+
+    border: 1px solid #2b2b2b;
+    border-radius: 14px;
+    padding: 20px;
+
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    box-shadow:
+        0 0 15px rgba(255, 0, 0, 0.08);
+
+    transition: 0.3s;
+}
+
+.stat-card:hover {
+    border-color: #ff1a1a;
+
+    box-shadow:
+        0 0 22px rgba(255, 0, 0, 0.25);
+
+    transform: translateY(-3px);
+}
+
+.stat-icon {
+    width: 52px;
+    height: 52px;
+
+    border-radius: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(255, 0, 0, 0.12);
+
+    border: 1px solid rgba(255, 0, 0, 0.35);
+
+    font-size: 23px;
+}
+
+.stat-card span {
+    color: #999999;
+    font-size: 13px;
+}
+
+.stat-card h2 {
+    margin: 4px 0 0;
+    color: #ffffff;
+    font-size: 25px;
+}
+
+/* =====================================================
+   MESSAGES
+===================================================== */
+
+.message {
+    padding: 13px 16px;
+    margin-bottom: 20px;
+
+    border-radius: 8px;
+
+    background: #141414;
+    border: 1px solid #333333;
+
+    color: #ffffff;
+}
+
+.message.success {
+    border-color: #00c853;
+    color: #00e676;
+}
+
+.message.error {
+    border-color: #ff1a1a;
+    color: #ff5252;
+}
+
+.message.warning {
+    border-color: #ff9800;
+    color: #ffb74d;
+}
+
+/* =====================================================
+   CARDS
+===================================================== */
+
+.card {
+    background: #0d0d0d;
+
+    border: 1px solid #292929;
+
+    border-radius: 14px;
+
+    padding: 24px;
+
+    margin-bottom: 28px;
+
+    box-shadow:
+        0 0 18px rgba(255, 0, 0, 0.05);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 20px;
+
+    border-bottom: 1px solid #242424;
+    padding-bottom: 16px;
+}
+
+.card-header h3 {
+    margin: 0 0 5px;
+
+    color: #ffffff;
+
+    font-size: 20px;
+}
+
+.card-header p {
+    margin: 0;
+
+    color: #888888;
+
+    font-size: 13px;
+}
+
+/* =====================================================
+   TABLE
+===================================================== */
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+
+    min-width: 850px;
+}
+
+thead {
+    background: #151515;
+}
+
+th {
+    padding: 14px 12px;
+
+    text-align: left;
+
+    color: #aaaaaa;
+
+    font-size: 12px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+
+    border-bottom: 1px solid #303030;
+}
+
+td {
+    padding: 15px 12px;
+
+    color: #dddddd;
+
+    border-bottom: 1px solid #202020;
+
+    font-size: 14px;
+}
+
+tbody tr {
+    transition: 0.2s;
+}
+
+tbody tr:hover {
+    background: rgba(255, 0, 0, 0.04);
+}
+
+td strong {
+    color: #ffffff;
+}
+
+/* =====================================================
+   BADGES
+===================================================== */
+
+.badge {
+    display: inline-block;
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+
+    font-weight: 600;
+}
+
+.badge-info {
+    background: rgba(0, 123, 255, 0.15);
+    border: 1px solid rgba(0, 123, 255, 0.35);
+    color: #5ca9ff;
+}
+
+.badge-success {
+    background: rgba(0, 200, 83, 0.12);
+    border: 1px solid rgba(0, 200, 83, 0.35);
+    color: #00e676;
+}
+
+.badge-dark {
+    background: #202020;
+    border: 1px solid #404040;
+    color: #bbbbbb;
+}
+
+.badge-warning {
+    background: rgba(255, 152, 0, 0.12);
+    border: 1px solid rgba(255, 152, 0, 0.35);
+    color: #ffb74d;
+}
+
+.badge-danger {
+    background: rgba(255, 0, 0, 0.12);
+    border: 1px solid rgba(255, 0, 0, 0.35);
+    color: #ff5252;
+}
+
+/* =====================================================
+   BUTTONS
+===================================================== */
+
+.btn {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 8px 13px;
+
+    border-radius: 7px;
+
+    text-decoration: none;
+
+    border: 1px solid transparent;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.25s;
+}
+
+.btn-primary {
+    background: linear-gradient(
+        135deg,
+        #ff1a1a,
+        #b30000
+    );
+
+    color: #ffffff;
+
+    border-color: #ff2b2b;
+
+    box-shadow:
+        0 0 10px rgba(255, 0, 0, 0.18);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(
+        135deg,
+        #ff3333,
+        #cc0000
+    );
+
+    box-shadow:
+        0 0 18px rgba(255, 0, 0, 0.35);
+
+    transform: translateY(-1px);
+}
+
+.btn-dark {
+    background: #181818;
+
+    border-color: #3a3a3a;
+
+    color: #ffffff;
+}
+
+.btn-dark:hover {
+    background: #242424;
+
+    border-color: #666666;
+}
+
+.btn-success {
+    background: #0c2b1a;
+
+    border-color: #00a651;
+
+    color: #00e676;
+}
+
+.btn-success:hover {
+    background: #103d24;
+
+    box-shadow:
+        0 0 12px rgba(0, 230, 118, 0.2);
+}
+
+/* =====================================================
+   PAYMENT FORM
+===================================================== */
+
+.payment-form {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    margin: 0;
+}
+
+.form-control {
+    background: #111111;
+
+    border: 1px solid #3a3a3a;
+
+    color: #ffffff;
+
+    border-radius: 6px;
+
+    padding: 8px 9px;
+
+    outline: none;
+}
+
+.form-control:focus {
+    border-color: #ff1a1a;
+
+    box-shadow:
+        0 0 8px rgba(255, 0, 0, 0.18);
+}
+
+.form-control option {
+    background: #111111;
+    color: #ffffff;
+}
+
+/* =====================================================
+   EMPTY STATE
+===================================================== */
+
+.empty-state {
+    text-align: center;
+
+    padding: 55px 20px;
+}
+
+.empty-icon {
+    width: 65px;
+    height: 65px;
+
+    margin: 0 auto 16px;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 27px;
+
+    color: #ff3333;
+
+    background: rgba(255, 0, 0, 0.08);
+
+    border: 1px solid rgba(255, 0, 0, 0.25);
+
+    box-shadow:
+        0 0 20px rgba(255, 0, 0, 0.12);
+}
+
+.empty-state h3 {
+    color: #ffffff;
+
+    margin-bottom: 7px;
+}
+
+.empty-state p {
+    color: #777777;
+
+    margin: 0;
+}
+
+/* =====================================================
+   WORKFLOW CARDS
+===================================================== */
+
+.grid-3 {
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 18px;
+
+    margin-bottom: 30px;
+}
+
+.quick-card {
+    background: linear-gradient(
+        145deg,
+        #151515,
+        #0a0a0a
+    );
+
+    border: 1px solid #292929;
+
+    border-radius: 14px;
+
+    padding: 24px;
+
+    text-align: center;
+
+    transition: 0.3s;
+}
+
+.quick-card:hover {
+    border-color: #ff1a1a;
+
+    box-shadow:
+        0 0 20px rgba(255, 0, 0, 0.16);
+
+    transform: translateY(-3px);
+}
+
+.quick-icon {
+    width: 55px;
+    height: 55px;
+
+    margin: 0 auto 15px;
+
+    border-radius: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 24px;
+
+    background: rgba(255, 0, 0, 0.10);
+
+    border: 1px solid rgba(255, 0, 0, 0.28);
+}
+
+.quick-card h3 {
+    color: #ffffff;
+
+    margin: 0 0 8px;
+
+    font-size: 17px;
+}
+
+.quick-card p {
+    color: #888888;
+
+    margin: 0;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 1100px) {
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .grid-3 {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 650px) {
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        padding: 16px;
+    }
+
+    .page-header h2 {
+        font-size: 23px;
+    }
+
+    .stat-card {
+        padding: 16px;
+    }
+
+    .payment-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .payment-form .form-control,
+    .payment-form .btn {
+        width: 100% !important;
+    }
+}
+
+</style>
+
+
+<div class="billing-page">
+
+    <!-- =====================================================
+         PAGE HEADER
+    ===================================================== -->
+
+    <div class="page-header">
+
+        <div>
+
+            <h2>Billing & Invoices</h2>
+
+            <p>
+                Manage hotel bills, payments and invoices.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         STATISTICS
+    ===================================================== -->
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                💰
+            </div>
+
+            <div>
+
+                <span>Total Bills</span>
+
+                <h2>
+                    {{ bills|length }}
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                ✅
+            </div>
+
+            <div>
+
+                <span>Paid Bills</span>
+
+                <h2>
+                    {{ paid_bills }}
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                ⏳
+            </div>
+
+            <div>
+
+                <span>Pending Bills</span>
+
+                <h2>
+                    {{ pending_bills }}
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                ₹
+            </div>
+
+            <div>
+
+                <span>Paid Revenue</span>
+
+                <h2>
+                    ₹{{ total_revenue }}
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         MESSAGES
+    ===================================================== -->
+
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div class="message {{ message.tags }}">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+
+    <!-- =====================================================
+         BOOKINGS READY FOR BILLING
+    ===================================================== -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h3>Bookings Ready for Billing</h3>
+
+                <p>
+                    Generate invoices for completed or active bookings.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        {% if bookings_without_bill %}
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Booking</th>
+
+                            <th>Guest</th>
+
+                            <th>Room</th>
+
+                            <th>Check-in</th>
+
+                            <th>Check-out</th>
+
+                            <th>Status</th>
+
+                            <th>Action</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for booking in bookings_without_bill %}
+
+                            <tr>
+
+                                <td>
+                                    #{{ booking.id }}
+                                </td>
+
+
+                                <td>
+
+                                    <strong>
+                                        {{ booking.guest.name }}
+                                    </strong>
+
+                                </td>
+
+
+                                <td>
+                                    Room {{ booking.room.room_number }}
+                                </td>
+
+
+                                <td>
+                                    {{ booking.check_in|date:"d M Y" }}
+                                </td>
+
+
+                                <td>
+                                    {{ booking.check_out|date:"d M Y" }}
+                                </td>
+
+
+                                <td>
+
+                                    {% if booking.status == 'Confirmed' %}
+
+                                        <span class="badge badge-info">
+                                            Confirmed
+                                        </span>
+
+                                    {% elif booking.status == 'Checked In' %}
+
+                                        <span class="badge badge-success">
+                                            Checked In
+                                        </span>
+
+                                    {% elif booking.status == 'Checked Out' %}
+
+                                        <span class="badge badge-dark">
+                                            Checked Out
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    <a
+                                        href="{% url 'create_bill' booking.id %}"
+                                        class="btn btn-primary"
+                                    >
+                                        Generate Bill
+                                    </a>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    ✓
+                </div>
+
+                <h3>No bookings waiting for billing</h3>
+
+                <p>
+                    All eligible bookings already have bills.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =====================================================
+         GENERATED BILLS
+    ===================================================== -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h3>Generated Bills</h3>
+
+                <p>
+                    View invoices and manage payments.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        {% if bills %}
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Invoice</th>
+
+                            <th>Guest</th>
+
+                            <th>Room</th>
+
+                            <th>Room Charges</th>
+
+                            <th>Food Charges</th>
+
+                            <th>Total</th>
+
+                            <th>Payment</th>
+
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for bill in bills %}
+
+                            <tr>
+
+                                <!-- Invoice -->
+
+                                <td>
+
+                                    <strong>
+                                        INV-{{ bill.id|stringformat:"04d" }}
+                                    </strong>
+
+                                </td>
+
+
+                                <!-- Guest -->
+
+                                <td>
+
+                                    <strong>
+                                        {{ bill.booking.guest.name }}
+                                    </strong>
+
+                                </td>
+
+
+                                <!-- Room -->
+
+                                <td>
+                                    Room {{ bill.booking.room.room_number }}
+                                </td>
+
+
+                                <!-- Room Charges -->
+
+                                <td>
+                                    ₹{{ bill.room_charges }}
+                                </td>
+
+
+                                <!-- Food Charges -->
+
+                                <td>
+                                    ₹{{ bill.food_charges }}
+                                </td>
+
+
+                                <!-- Total -->
+
+                                <td>
+
+                                    <strong>
+                                        ₹{{ bill.total_amount }}
+                                    </strong>
+
+                                </td>
+
+
+                                <!-- Payment -->
+
+                                <td>
+
+                                    {% if bill.payment_status == 'Paid' %}
+
+                                        <span class="badge badge-success">
+                                            Paid
+                                        </span>
+
+                                        {% if bill.payment_method %}
+
+                                            <small style="
+                                                display:block;
+                                                margin-top:5px;
+                                                color:#888;
+                                            ">
+                                                {{ bill.payment_method }}
+                                            </small>
+
+                                        {% endif %}
+
+                                    {% elif bill.payment_status == 'Pending' %}
+
+                                        <span class="badge badge-warning">
+                                            Pending
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="badge badge-danger">
+                                            {{ bill.payment_status }}
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- Actions -->
+
+                                <td>
+
+                                    <div style="
+                                        display:flex;
+                                        gap:8px;
+                                        flex-wrap:wrap;
+                                        align-items:center;
+                                    ">
+
+                                        <!-- View Invoice -->
+
+                                        <a
+                                            href="{% url 'invoice' bill.id %}"
+                                            class="btn btn-dark"
+                                        >
+                                            View Invoice
+                                        </a>
+
+
+                                        <!-- Payment -->
+
+                                        {% if bill.payment_status == 'Pending' %}
+
+                                            <form
+                                                method="post"
+                                                action="{% url 'pay_bill' bill.id %}"
+                                                class="payment-form"
+                                            >
+
+                                                {% csrf_token %}
+
+                                                <select
+                                                    name="payment_method"
+                                                    class="form-control"
+                                                    style="width:100px;"
+                                                >
+
+                                                    <option value="Cash">
+                                                        Cash
+                                                    </option>
+
+                                                    <option value="Card">
+                                                        Card
+                                                    </option>
+
+                                                    <option value="UPI">
+                                                        UPI
+                                                    </option>
+
+                                                </select>
+
+
+                                                <button
+                                                    type="submit"
+                                                    class="btn btn-success"
+                                                >
+                                                    Pay
+                                                </button>
+
+                                            </form>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    ₹
+                </div>
+
+                <h3>No bills generated</h3>
+
+                <p>
+                    Generate a bill from the bookings above.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =====================================================
+         BILLING WORKFLOW
+    ===================================================== -->
+
+    <div class="grid-3">
+
+        <div class="quick-card">
+
+            <div class="quick-icon">
+                🧾
+            </div>
+
+            <h3>Generate Bill</h3>
+
+            <p>
+                Create a bill from a hotel booking.
+            </p>
+
+        </div>
+
+
+        <div class="quick-card">
+
+            <div class="quick-icon">
+                💳
+            </div>
+
+            <h3>Record Payment</h3>
+
+            <p>
+                Accept Cash, Card or UPI payments.
+            </p>
+
+        </div>
+
+
+        <div class="quick-card">
+
+            <div class="quick-icon">
+                🖨
+            </div>
+
+            <h3>Print Invoice</h3>
+
+            <p>
+                Open an invoice and print it for the guest.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

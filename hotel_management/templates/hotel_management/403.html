@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Access Denied - Hotel Sugam ERP</title>
+
+    <style>
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            height: 100vh;
+        }
+
+        .container {
+
+            background: white;
+
+            width: 450px;
+
+            padding: 40px;
+
+            text-align: center;
+
+            border-radius: 10px;
+
+            box-shadow: 0 4px 15px rgba(0,0,0,0.10);
+        }
+
+        .icon {
+
+            font-size: 60px;
+
+            margin-bottom: 15px;
+        }
+
+        h1 {
+
+            color: #dc2626;
+
+            margin-bottom: 10px;
+        }
+
+        p {
+
+            color: #6b7280;
+
+            margin-bottom: 25px;
+        }
+
+        .back-btn {
+
+            display: inline-block;
+
+            background: #2563eb;
+
+            color: white;
+
+            text-decoration: none;
+
+            padding: 11px 20px;
+
+            border-radius: 5px;
+        }
+
+        .back-btn:hover {
+
+            background: #1d4ed8;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="container">
+
+        <div class="icon">
+            🔒
+        </div>
+
+        <h1>
+            Access Denied
+        </h1>
+
+        <p>
+            You don't have permission to access this page.
+        </p>
+
+        <a
+            href="{% url 'dashboard' %}"
+            class="back-btn"
+        >
+            🏠 Back to Dashboard
+        </a>
+
+    </div>
+
+
+</body>
+
+</html>

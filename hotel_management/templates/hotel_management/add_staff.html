@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Add Staff</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+
+        .buttons {
+            margin-top: 25px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+        }
+
+        .back-btn {
+            background-color: #6b7280;
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+        }
+
+        .back-btn:hover {
+            background-color: #4b5563;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <h1>Add Staff</h1>
+
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+
+        <label for="name">
+            Staff Name
+        </label>
+
+        <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Enter staff name"
+            required
+        >
+
+
+        <label for="phone">
+            Phone
+        </label>
+
+        <input
+            type="text"
+            id="phone"
+            name="phone"
+            placeholder="Enter phone number"
+            required
+        >
+
+
+        <label for="email">
+            Email
+        </label>
+
+        <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Enter email address"
+        >
+
+
+        <label for="position">
+            Position
+        </label>
+
+        <input
+            type="text"
+            id="position"
+            name="position"
+            placeholder="Example: Manager, Receptionist, Chef"
+            required
+        >
+
+
+        <label for="salary">
+            Salary
+        </label>
+
+        <input
+            type="number"
+            id="salary"
+            name="salary"
+            placeholder="Enter salary"
+            step="0.01"
+            required
+        >
+
+
+        <label for="joining_date">
+            Joining Date
+        </label>
+
+        <input
+            type="date"
+            id="joining_date"
+            name="joining_date"
+            required
+        >
+
+
+        <label for="status">
+            Status
+        </label>
+
+        <select
+            id="status"
+            name="status"
+        >
+
+            <option value="Active">
+                Active
+            </option>
+
+            <option value="Inactive">
+                Inactive
+            </option>
+
+        </select>
+
+
+        <div class="buttons">
+
+            <button type="submit">
+                Add Staff
+            </button>
+
+            <a
+                href="{% url 'staff' %}"
+                class="back-btn"
+            >
+                Back
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+
+</html>

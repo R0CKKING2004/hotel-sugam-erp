@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Guest - Hotel Sugam ERP</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 230px;
+            height: 100vh;
+            background: #1f2937;
+            color: white;
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            padding: 25px 10px;
+        }
+
+        .menu a {
+            display: block;
+            color: #d1d5db;
+            text-decoration: none;
+            padding: 14px 25px;
+        }
+
+        .menu a:hover {
+            background: #374151;
+            color: white;
+        }
+
+        .main {
+            margin-left: 230px;
+            padding: 40px;
+        }
+
+        .form-box {
+            max-width: 600px;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            color: #1f2937;
+        }
+
+        label {
+            display: block;
+            margin-top: 18px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        button {
+            margin-top: 25px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .cancel {
+            margin-left: 10px;
+            text-decoration: none;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="sidebar">
+
+    <div class="logo">
+        🏨 Hotel Sugam
+    </div>
+
+    <div class="menu">
+        <a href="/">🏠 Dashboard</a>
+        <a href="/rooms/">🛏️ Rooms</a>
+        <a href="/guests/">👤 Guests</a>
+        <a href="/admin/hotel_management/booking/">📅 Bookings</a>
+        <a href="#">🍽️ Restaurant</a>
+        <a href="#">💰 Billing</a>
+        <a href="#">👨‍💼 Staff</a>
+        <a href="#">📊 Reports</a>
+        <a href="/admin/">⚙️ Admin</a>
+    </div>
+
+</div>
+
+
+<div class="main">
+
+    <h1>Edit Guest</h1>
+
+    <div class="form-box">
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <label>Name</label>
+            <input
+                type="text"
+                name="name"
+                value="{{ guest.name }}"
+                required
+            >
+
+            <label>Phone</label>
+            <input
+                type="text"
+                name="phone"
+                value="{{ guest.phone }}"
+                required
+            >
+
+            <label>Email</label>
+            <input
+                type="email"
+                name="email"
+                value="{{ guest.email }}"
+            >
+
+            <label>ID Proof</label>
+            <input
+                type="text"
+                name="id_proof"
+                value="{{ guest.id_proof }}"
+            >
+
+            <label>Address</label>
+            <textarea name="address">{{ guest.address }}</textarea>
+
+            <button type="submit">
+                Save Changes
+            </button>
+
+            <a href="/guests/" class="cancel">
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

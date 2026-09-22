@@ -1,0 +1,1357 @@
+{% extends 'hotel_management/base.html' %}
+
+{% block title %}
+Hotel Sugam | Dashboard
+{% endblock %}
+
+{% block page_title %}
+Dashboard
+{% endblock %}
+
+
+{% block content %}
+
+<style>
+
+    /* ================================
+       DASHBOARD ONLY
+       ================================ */
+
+    .welcome-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 30px;
+    }
+
+    .welcome-section h1 {
+        font-size: 28px;
+        color: #ffffff;
+        margin-bottom: 7px;
+    }
+
+    .welcome-section h1 span {
+        color: #ff1f2d;
+    }
+
+    .welcome-section p {
+        color: #777;
+        font-size: 13px;
+    }
+
+    .hotel-tagline {
+        color: #777;
+        font-size: 12px;
+        font-style: italic;
+        border-left: 2px solid #ff1f2d;
+        padding-left: 12px;
+        margin-top: 8px;
+    }
+
+
+    /* ================================
+       SUMMARY CARDS
+       ================================ */
+
+    .dashboard-summary {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-bottom: 22px;
+    }
+
+    .dashboard-card {
+        background: #0d0d0d;
+        border: 1px solid #242424;
+        border-radius: 10px;
+        padding: 20px;
+        transition: 0.25s;
+    }
+
+    .dashboard-card:hover {
+        border-color: #ff1f2d;
+        box-shadow: 0 0 20px rgba(255, 31, 45, 0.10);
+        transform: translateY(-2px);
+    }
+
+    .dashboard-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+
+    .dashboard-card-title {
+        color: #777;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .dashboard-card-icon {
+        width: 38px;
+        height: 38px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border: 1px solid #ff1f2d;
+        border-radius: 7px;
+
+        color: #ff1f2d;
+        font-size: 18px;
+
+        background: rgba(255, 31, 45, 0.05);
+    }
+
+    .dashboard-card-value {
+        color: #ffffff;
+        font-size: 28px;
+        font-weight: 600;
+    }
+
+    .dashboard-card-note {
+        color: #555;
+        font-size: 11px;
+        margin-top: 7px;
+    }
+
+
+    /* ================================
+       MAIN GRID
+       ================================ */
+
+    .dashboard-main-grid {
+        display: grid;
+        grid-template-columns: 1.25fr 1fr;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .dashboard-panel {
+        background: #0d0d0d;
+        border: 1px solid #242424;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .dashboard-panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        padding: 18px 20px;
+
+        border-bottom: 1px solid #242424;
+    }
+
+    .dashboard-panel-header h3 {
+        color: #ffffff;
+        font-size: 14px;
+    }
+
+    .dashboard-view-link {
+        color: #ff1f2d;
+        text-decoration: none;
+        font-size: 11px;
+    }
+
+    .dashboard-view-link:hover {
+        color: #ff5963;
+    }
+
+
+    /* ================================
+       ROOM OCCUPANCY
+       ================================ */
+
+    .occupancy-content {
+        padding: 25px;
+        display: flex;
+        align-items: center;
+        gap: 30px;
+    }
+
+    .occupancy-circle {
+        width: 145px;
+        height: 145px;
+
+        border-radius: 50%;
+
+        background:
+            conic-gradient(
+                #ff1f2d 0deg 245deg,
+                #292929 245deg 360deg
+            );
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        flex-shrink: 0;
+
+        box-shadow:
+            0 0 25px rgba(255, 31, 45, 0.10);
+    }
+
+    .occupancy-inner {
+        width: 110px;
+        height: 110px;
+
+        border-radius: 50%;
+
+        background: #0d0d0d;
+
+        display: flex;
+        flex-direction: column;
+
+        align-items: center;
+        justify-content: center;
+    }
+
+    .occupancy-inner strong {
+        color: #ffffff;
+        font-size: 25px;
+    }
+
+    .occupancy-inner span {
+        color: #666;
+        font-size: 10px;
+        margin-top: 4px;
+    }
+
+    .occupancy-list {
+        flex: 1;
+    }
+
+    .occupancy-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        padding: 11px 0;
+
+        border-bottom: 1px solid #1c1c1c;
+
+        font-size: 12px;
+    }
+
+    .occupancy-row:last-child {
+        border-bottom: none;
+    }
+
+    .occupancy-label {
+        color: #888;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .occupancy-number {
+        color: #ffffff;
+        font-weight: 600;
+    }
+
+    .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    .dot-red {
+        background: #ff1f2d;
+        box-shadow: 0 0 7px rgba(255, 31, 45, 0.5);
+    }
+
+    .dot-gray {
+        background: #777;
+    }
+
+    .dot-orange {
+        background: #ffae35;
+    }
+
+
+    /* ================================
+       REVENUE
+       ================================ */
+
+    .revenue-content {
+        padding: 20px;
+    }
+
+    .revenue-total {
+        margin-bottom: 20px;
+    }
+
+    .revenue-total span {
+        color: #666;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .revenue-total strong {
+        display: block;
+        color: #ffffff;
+        font-size: 26px;
+        margin-top: 7px;
+    }
+
+    .revenue-bars {
+        height: 150px;
+
+        display: flex;
+        align-items: flex-end;
+
+        gap: 14px;
+
+        border-bottom: 1px solid #292929;
+
+        padding: 0 5px;
+    }
+
+    .revenue-bar-column {
+        flex: 1;
+
+        height: 100%;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .revenue-bar {
+        width: 70%;
+
+        min-height: 15px;
+
+        background: linear-gradient(
+            to top,
+            #b8000d,
+            #ff1f2d
+        );
+
+        border-radius: 4px 4px 0 0;
+
+        box-shadow:
+            0 0 10px rgba(255, 31, 45, 0.15);
+    }
+
+    .revenue-week {
+        color: #555;
+        font-size: 9px;
+    }
+
+
+    /* ================================
+       ACTIVITY
+       ================================ */
+
+    .activity-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .activity-box {
+        padding: 22px;
+        border-right: 1px solid #242424;
+    }
+
+    .activity-box:last-child {
+        border-right: none;
+    }
+
+    .activity-label {
+        color: #666;
+        font-size: 11px;
+        margin-bottom: 9px;
+    }
+
+    .activity-value {
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 600;
+    }
+
+    .activity-value.red {
+        color: #ff1f2d;
+    }
+
+    .activity-value.green {
+        color: #20e879;
+    }
+
+    .activity-value.orange {
+        color: #ffae35;
+    }
+
+
+    /* ================================
+       TABLES
+       ================================ */
+
+    .dashboard-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .dashboard-table th {
+        background: #111111;
+        color: #666;
+
+        font-size: 10px;
+        text-align: left;
+
+        text-transform: uppercase;
+        letter-spacing: 1px;
+
+        padding: 13px 18px;
+
+        border-bottom: 1px solid #242424;
+    }
+
+    .dashboard-table td {
+        color: #aaa;
+
+        font-size: 12px;
+
+        padding: 14px 18px;
+
+        border-bottom: 1px solid #191919;
+    }
+
+    .dashboard-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .dashboard-table tr:hover td {
+        background: rgba(255, 31, 45, 0.025);
+    }
+
+    .guest-name {
+        color: #ffffff !important;
+        font-weight: 500;
+    }
+
+    .table-status {
+        display: inline-block;
+
+        padding: 5px 9px;
+
+        border-radius: 20px;
+
+        font-size: 10px;
+    }
+
+    .status-arriving {
+        color: #20e879;
+        background: rgba(32, 232, 121, 0.08);
+    }
+
+    .status-departing {
+        color: #ff1f2d;
+        background: rgba(255, 31, 45, 0.08);
+    }
+
+    .status-confirmed {
+        color: #ffae35;
+        background: rgba(255, 174, 53, 0.08);
+    }
+
+
+    /* ================================
+       TABLE GRID
+       ================================ */
+
+    .two-table-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+
+    /* ================================
+       QUICK ACTIONS
+       ================================ */
+
+    .quick-actions-title {
+        color: #ffffff;
+        font-size: 15px;
+        margin: 25px 0 13px;
+    }
+
+    .dashboard-actions {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 12px;
+    }
+
+    .dashboard-action {
+        background: #0d0d0d;
+
+        border: 1px solid #242424;
+
+        border-radius: 8px;
+
+        padding: 18px 12px;
+
+        text-decoration: none;
+
+        text-align: center;
+
+        color: #aaa;
+
+        font-size: 11px;
+
+        transition: 0.2s;
+    }
+
+    .dashboard-action:hover {
+        color: #ffffff;
+
+        border-color: #ff1f2d;
+
+        box-shadow:
+            0 0 18px rgba(255, 31, 45, 0.12);
+
+        transform: translateY(-2px);
+    }
+
+    .dashboard-action-icon {
+        color: #ff1f2d;
+        font-size: 21px;
+        margin-bottom: 10px;
+    }
+
+
+    /* ================================
+       RESPONSIVE
+       ================================ */
+
+    @media (max-width: 1200px) {
+
+        .dashboard-summary {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .dashboard-actions {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+
+    @media (max-width: 950px) {
+
+        .dashboard-main-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .two-table-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .activity-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .activity-box {
+            border-bottom: 1px solid #242424;
+        }
+    }
+
+
+    @media (max-width: 700px) {
+
+        .welcome-section {
+            display: block;
+        }
+
+        .hotel-tagline {
+            margin-top: 15px;
+        }
+
+        .dashboard-summary {
+            grid-template-columns: 1fr;
+        }
+
+        .dashboard-actions {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .occupancy-content {
+            flex-direction: column;
+        }
+
+        .activity-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .activity-box {
+            border-right: none;
+        }
+    }
+
+</style>
+
+
+<!-- =====================================================
+     WELCOME
+     ===================================================== -->
+
+<div class="welcome-section">
+
+    <div>
+
+        <h1>
+            Welcome Back,
+            <span>
+                {{ request.user.username }}!
+            </span>
+        </h1>
+
+        <p>
+            Here's what's happening at Hotel Sugam today.
+        </p>
+
+    </div>
+
+
+    <div class="hotel-tagline">
+        Make Every Guest Feel at Home
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     SUMMARY CARDS
+     ===================================================== -->
+
+<div class="dashboard-summary">
+
+
+    <!-- TOTAL ROOMS -->
+
+    <div class="dashboard-card">
+
+        <div class="dashboard-card-top">
+
+            <div class="dashboard-card-title">
+                Total Rooms
+            </div>
+
+            <div class="dashboard-card-icon">
+                🛏
+            </div>
+
+        </div>
+
+        <div class="dashboard-card-value">
+            {{ total_rooms }}
+        </div>
+
+        <div class="dashboard-card-note">
+            Registered rooms
+        </div>
+
+    </div>
+
+
+    <!-- AVAILABLE ROOMS -->
+
+    <div class="dashboard-card">
+
+        <div class="dashboard-card-top">
+
+            <div class="dashboard-card-title">
+                Available Rooms
+            </div>
+
+            <div class="dashboard-card-icon">
+                ✓
+            </div>
+
+        </div>
+
+        <div class="dashboard-card-value">
+            {{ available_rooms }}
+        </div>
+
+        <div class="dashboard-card-note">
+            Ready for booking
+        </div>
+
+    </div>
+
+
+    <!-- GUESTS -->
+
+    <div class="dashboard-card">
+
+        <div class="dashboard-card-top">
+
+            <div class="dashboard-card-title">
+                Total Guests
+            </div>
+
+            <div class="dashboard-card-icon">
+                👥
+            </div>
+
+        </div>
+
+        <div class="dashboard-card-value">
+            {{ total_guests }}
+        </div>
+
+        <div class="dashboard-card-note">
+            Registered guests
+        </div>
+
+    </div>
+
+
+    <!-- REVENUE -->
+
+    <div class="dashboard-card">
+
+        <div class="dashboard-card-top">
+
+            <div class="dashboard-card-title">
+                Total Revenue
+            </div>
+
+            <div class="dashboard-card-icon">
+                ₹
+            </div>
+
+        </div>
+
+        <div class="dashboard-card-value">
+            ₹{{ paid_revenue }}
+        </div>
+
+        <div class="dashboard-card-note">
+            Paid revenue
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     ROOM + REVENUE
+     ===================================================== -->
+
+<div class="dashboard-main-grid">
+
+
+    <!-- ROOM OCCUPANCY -->
+
+    <div class="dashboard-panel">
+
+        <div class="dashboard-panel-header">
+
+            <h3>
+                Room Occupancy
+            </h3>
+
+            <a href="{% url 'rooms' %}"
+               class="dashboard-view-link">
+
+                View Rooms →
+
+            </a>
+
+        </div>
+
+
+        <div class="occupancy-content">
+
+
+            <div class="occupancy-circle">
+
+                <div class="occupancy-inner">
+
+                    <strong>
+                        {{ occupancy_percentage }}%
+                    </strong>
+
+                    <span>
+                        OCCUPIED
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="occupancy-list">
+
+
+                <div class="occupancy-row">
+
+                    <span class="occupancy-label">
+
+                        <span class="dot dot-red"></span>
+
+                        Occupied
+
+                    </span>
+
+                    <span class="occupancy-number">
+                        {{ occupied_rooms }}
+                    </span>
+
+                </div>
+
+
+                <div class="occupancy-row">
+
+                    <span class="occupancy-label">
+
+                        <span class="dot dot-gray"></span>
+
+                        Available
+
+                    </span>
+
+                    <span class="occupancy-number">
+                        {{ available_rooms }}
+                    </span>
+
+                </div>
+
+
+                <div class="occupancy-row">
+
+                    <span class="occupancy-label">
+
+                        <span class="dot dot-orange"></span>
+
+                        Maintenance
+
+                    </span>
+
+                    <span class="occupancy-number">
+                        {{ maintenance_rooms }}
+                    </span>
+
+                </div>
+
+
+                <div class="occupancy-row">
+
+                    <span class="occupancy-label">
+
+                        Total Rooms
+
+                    </span>
+
+                    <span class="occupancy-number">
+                        {{ total_rooms }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- REVENUE OVERVIEW -->
+
+    <div class="dashboard-panel">
+
+        <div class="dashboard-panel-header">
+
+            <h3>
+                Revenue Overview
+            </h3>
+
+            <span class="dashboard-view-link">
+                This Month
+            </span>
+
+        </div>
+
+
+        <div class="revenue-content">
+
+
+            <div class="revenue-total">
+
+                <span>
+                    Paid Revenue
+                </span>
+
+                <strong>
+                    ₹{{ paid_revenue }}
+                </strong>
+
+            </div>
+
+
+            <div class="revenue-bars">
+
+
+                <div class="revenue-bar-column">
+
+                    <div
+                        class="revenue-bar"
+                        style="height:35%;">
+                    </div>
+
+                    <span class="revenue-week">
+                        W1
+                    </span>
+
+                </div>
+
+
+                <div class="revenue-bar-column">
+
+                    <div
+                        class="revenue-bar"
+                        style="height:58%;">
+                    </div>
+
+                    <span class="revenue-week">
+                        W2
+                    </span>
+
+                </div>
+
+
+                <div class="revenue-bar-column">
+
+                    <div
+                        class="revenue-bar"
+                        style="height:48%;">
+                    </div>
+
+                    <span class="revenue-week">
+                        W3
+                    </span>
+
+                </div>
+
+
+                <div class="revenue-bar-column">
+
+                    <div
+                        class="revenue-bar"
+                        style="height:82%;">
+                    </div>
+
+                    <span class="revenue-week">
+                        W4
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     TODAY'S ACTIVITY
+     ===================================================== -->
+
+<div class="dashboard-panel"
+     style="margin-bottom:20px;">
+
+    <div class="dashboard-panel-header">
+
+        <h3>
+            Today's Activity
+        </h3>
+
+        <a href="{% url 'bookings' %}"
+           class="dashboard-view-link">
+
+            View Reservations →
+
+        </a>
+
+    </div>
+
+
+    <div class="activity-grid">
+
+
+        <div class="activity-box">
+
+            <div class="activity-label">
+                Today's Check-ins
+            </div>
+
+            <div class="activity-value green">
+                {{ today_checkins }}
+            </div>
+
+        </div>
+
+
+        <div class="activity-box">
+
+            <div class="activity-label">
+                Today's Check-outs
+            </div>
+
+            <div class="activity-value red">
+                {{ today_checkouts }}
+            </div>
+
+        </div>
+
+
+        <div class="activity-box">
+
+            <div class="activity-label">
+                Total Bookings
+            </div>
+
+            <div class="activity-value">
+                {{ total_bookings }}
+            </div>
+
+        </div>
+
+
+        <div class="activity-box">
+
+            <div class="activity-label">
+                Pending Revenue
+            </div>
+
+            <div class="activity-value orange">
+                ₹{{ pending_revenue }}
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     ARRIVALS + DEPARTURES
+     ===================================================== -->
+
+<div class="two-table-grid">
+
+
+    <!-- TODAY'S ARRIVALS -->
+
+    <div class="dashboard-panel">
+
+        <div class="dashboard-panel-header">
+
+            <h3>
+                Today's Arrivals
+            </h3>
+
+            <a href="{% url 'bookings' %}"
+               class="dashboard-view-link">
+
+                View All →
+
+            </a>
+
+        </div>
+
+
+        <div class="table-container">
+
+            <table class="dashboard-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Guest
+                        </th>
+
+                        <th>
+                            Room
+                        </th>
+
+                        <th>
+                            Guests
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for booking in today_arrivals %}
+
+                    <tr>
+
+                        <td class="guest-name">
+                            {{ booking.guest.name }}
+                        </td>
+
+                        <td>
+                            {{ booking.room.room_number }}
+                        </td>
+
+                        <td>
+                            {{ booking.number_of_guests }}
+                        </td>
+
+                        <td>
+
+                            <span class="table-status status-arriving">
+                                {{ booking.status }}
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="4"
+                            style="text-align:center;color:#555;">
+
+                            No arrivals today
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- TODAY'S DEPARTURES -->
+
+    <div class="dashboard-panel">
+
+        <div class="dashboard-panel-header">
+
+            <h3>
+                Today's Departures
+            </h3>
+
+            <a href="{% url 'bookings' %}"
+               class="dashboard-view-link">
+
+                View All →
+
+            </a>
+
+        </div>
+
+
+        <div class="table-container">
+
+            <table class="dashboard-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Guest
+                        </th>
+
+                        <th>
+                            Room
+                        </th>
+
+                        <th>
+                            Guests
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for booking in today_departures %}
+
+                    <tr>
+
+                        <td class="guest-name">
+                            {{ booking.guest.name }}
+                        </td>
+
+                        <td>
+                            {{ booking.room.room_number }}
+                        </td>
+
+                        <td>
+                            {{ booking.number_of_guests }}
+                        </td>
+
+                        <td>
+
+                            <span class="table-status status-departing">
+                                {{ booking.status }}
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="4"
+                            style="text-align:center;color:#555;">
+
+                            No departures today
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     QUICK ACTIONS
+     ===================================================== -->
+
+<h3 class="quick-actions-title">
+    Quick Actions
+</h3>
+
+
+<div class="dashboard-actions">
+
+
+    <a href="{% url 'add_booking' %}"
+       class="dashboard-action">
+
+        <div class="dashboard-action-icon">
+            +
+        </div>
+
+        New Reservation
+
+    </a>
+
+
+    <a href="{% url 'add_guest' %}"
+       class="dashboard-action">
+
+        <div class="dashboard-action-icon">
+            👤
+        </div>
+
+        Add Guest
+
+    </a>
+
+
+    <a href="{% url 'rooms' %}"
+       class="dashboard-action">
+
+        <div class="dashboard-action-icon">
+            🛏
+        </div>
+
+        Manage Rooms
+
+    </a>
+
+
+    <a href="{% url 'restaurant' %}"
+       class="dashboard-action">
+
+        <div class="dashboard-action-icon">
+            🍽
+        </div>
+
+        Restaurant Order
+
+    </a>
+
+
+    <a href="{% url 'billing' %}"
+       class="dashboard-action">
+
+        <div class="dashboard-action-icon">
+            ₹
+        </div>
+
+        Create Bill
+
+    </a>
+
+
+    <a href="{% url 'reports' %}"
+       class="dashboard-action">
+
+        <div class="dashboard-action-icon">
+            ▥
+        </div>
+
+        View Reports
+
+    </a>
+
+</div>
+
+
+{% endblock %}

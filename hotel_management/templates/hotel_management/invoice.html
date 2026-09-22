@@ -1,0 +1,350 @@
+{% extends 'hotel_management/base.html' %}
+
+{% block title %}Invoice #{{ bill.id }}{% endblock %}
+
+{% block page_title %}Invoice{% endblock %}
+
+{% block content %}
+
+<div class="invoice-container">
+
+    <div class="invoice-header">
+
+        <div>
+            <h1>HOTEL SUGAM</h1>
+            <p>Hotel Management & Hospitality</p>
+            <p>Thoothukudi, Tamil Nadu</p>
+        </div>
+
+        <div class="invoice-number">
+            <h2>INVOICE</h2>
+            <p>
+                Invoice #: <strong>{{ bill.id }}</strong>
+            </p>
+            <p>
+                Date:
+                {{ bill.created_at|date:"d M Y" }}
+            </p>
+        </div>
+
+    </div>
+
+
+    <hr>
+
+
+    <!-- Guest Details -->
+
+    <div class="invoice-details">
+
+        <div>
+
+            <h3>Guest Details</h3>
+
+            <p>
+                <strong>{{ bill.booking.guest.name }}</strong>
+            </p>
+
+            <p>
+                Phone:
+                {{ bill.booking.guest.phone }}
+            </p>
+
+            {% if bill.booking.guest.email %}
+            <p>
+                Email:
+                {{ bill.booking.guest.email }}
+            </p>
+            {% endif %}
+
+        </div>
+
+
+        <div>
+
+            <h3>Stay Details</h3>
+
+            <p>
+                Room:
+                <strong>
+                    {{ bill.booking.room.room_number }}
+                </strong>
+            </p>
+
+            <p>
+                Check-in:
+                {{ bill.booking.check_in|date:"d M Y" }}
+            </p>
+
+            <p>
+                Check-out:
+                {{ bill.booking.check_out|date:"d M Y" }}
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- Charges -->
+
+    <table class="invoice-table">
+
+        <thead>
+
+            <tr>
+
+                <th>Description</th>
+
+                <th>Amount</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <tr>
+
+                <td>
+                    Room Charges
+                </td>
+
+                <td>
+                    ₹{{ bill.room_charges }}
+                </td>
+
+            </tr>
+
+
+            <tr>
+
+                <td>
+                    Food & Restaurant Charges
+                </td>
+
+                <td>
+                    ₹{{ bill.food_charges }}
+                </td>
+
+            </tr>
+
+
+            <tr class="total-row">
+
+                <td>
+                    <strong>Total Amount</strong>
+                </td>
+
+                <td>
+                    <strong>
+                        ₹{{ bill.total_amount }}
+                    </strong>
+                </td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+
+    <!-- Payment -->
+
+    <div class="payment-section">
+
+        <div>
+
+            <h3>Payment Status</h3>
+
+            {% if bill.payment_status == 'Paid' %}
+
+                <span class="payment-paid">
+                    PAID
+                </span>
+
+                {% if bill.payment_method %}
+                <p>
+                    Method:
+                    {{ bill.payment_method }}
+                </p>
+                {% endif %}
+
+                {% if bill.payment_date %}
+                <p>
+                    Paid on:
+                    {{ bill.payment_date|date:"d M Y, h:i A" }}
+                </p>
+                {% endif %}
+
+            {% else %}
+
+                <span class="payment-pending">
+                    PAYMENT PENDING
+                </span>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- Footer -->
+
+    <div class="invoice-footer">
+
+        <p>
+            Thank you for choosing Hotel Sugam.
+        </p>
+
+        <p>
+            We hope you enjoyed your stay.
+        </p>
+
+    </div>
+
+
+    <!-- Print Button -->
+
+    <div class="invoice-actions">
+
+        <button
+            onclick="window.print()"
+            class="btn btn-primary"
+        >
+            🖨 Print Invoice
+        </button>
+
+        <a
+            href="{% url 'billing' %}"
+            class="btn btn-secondary"
+        >
+            Back to Billing
+        </a>
+
+    </div>
+
+</div>
+
+
+<style>
+
+.invoice-container {
+    max-width: 900px;
+    margin: 30px auto;
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+}
+
+.invoice-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+.invoice-header h1 {
+    margin-bottom: 5px;
+}
+
+.invoice-header p {
+    margin: 4px 0;
+}
+
+.invoice-number {
+    text-align: right;
+}
+
+.invoice-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin: 30px 0;
+}
+
+.invoice-details h3 {
+    margin-bottom: 10px;
+}
+
+.invoice-details p {
+    margin: 6px 0;
+}
+
+.invoice-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+}
+
+.invoice-table th,
+.invoice-table td {
+    padding: 14px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+.invoice-table th:last-child,
+.invoice-table td:last-child {
+    text-align: right;
+}
+
+.total-row td {
+    font-size: 18px;
+}
+
+.payment-section {
+    margin-top: 30px;
+    padding: 20px;
+    border-radius: 8px;
+    background: #f7f7f7;
+}
+
+.payment-paid {
+    font-weight: bold;
+}
+
+.payment-pending {
+    font-weight: bold;
+}
+
+.invoice-footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+}
+
+.invoice-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 30px;
+}
+
+
+@media print {
+
+    body {
+        background: white !important;
+    }
+
+    .sidebar,
+    .navbar,
+    .page-header,
+    .invoice-actions {
+        display: none !important;
+    }
+
+    .invoice-container {
+        margin: 0;
+        max-width: 100%;
+        box-shadow: none;
+        border-radius: 0;
+    }
+
+}
+
+</style>
+
+{% endblock %}

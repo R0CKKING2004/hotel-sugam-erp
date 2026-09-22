@@ -1,0 +1,120 @@
+{% extends 'hotel_management/base.html' %}
+
+{% block title %}Login - Hotel Sugam ERP{% endblock %}
+
+{% block content %}
+
+<div
+    style="
+        min-height:70vh;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+    "
+>
+
+    <div
+        class="card"
+        style="
+            width:100%;
+            max-width:420px;
+            padding:35px;
+        "
+    >
+
+        <div style="text-align:center; margin-bottom:30px;">
+
+            <div style="font-size:45px;">
+                🏨
+            </div>
+
+            <h2>Hotel Sugam ERP</h2>
+
+            <p>
+                Sign in to access the management system
+            </p>
+
+        </div>
+
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                <div
+                    style="
+                        padding:12px;
+                        margin-bottom:15px;
+                        border-radius:6px;
+                        background:#fee2e2;
+                    "
+                >
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div style="margin-bottom:18px;">
+
+                <label>
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    name="username"
+                    placeholder="Enter username"
+                    required
+                    style="
+                        width:100%;
+                        padding:12px;
+                        margin-top:7px;
+                    "
+                >
+
+            </div>
+
+
+            <div style="margin-bottom:25px;">
+
+                <label>
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Enter password"
+                    required
+                    style="
+                        width:100%;
+                        padding:12px;
+                        margin-top:7px;
+                    "
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+                style="width:100%;"
+            >
+                Login
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

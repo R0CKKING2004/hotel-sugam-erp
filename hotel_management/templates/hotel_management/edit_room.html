@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Room - Hotel Sugam ERP</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+        }
+
+        .main {
+            margin-left: 230px;
+            padding: 40px;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 230px;
+            height: 100vh;
+            background: #1f2937;
+            color: white;
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            padding: 25px 10px;
+        }
+
+        .menu a {
+            display: block;
+            color: #d1d5db;
+            text-decoration: none;
+            padding: 14px 25px;
+        }
+
+        .menu a:hover {
+            background: #374151;
+            color: white;
+        }
+
+        .form-box {
+            max-width: 600px;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            color: #1f2937;
+        }
+
+        label {
+            display: block;
+            margin-top: 18px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        button {
+            margin-top: 25px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .cancel {
+            margin-left: 10px;
+            text-decoration: none;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="sidebar">
+
+    <div class="logo">
+        🏨 Hotel Sugam
+    </div>
+
+    <div class="menu">
+        <a href="/">🏠 Dashboard</a>
+        <a href="/rooms/">🛏️ Rooms</a>
+        <a href="/admin/hotel_management/guest/">👤 Guests</a>
+        <a href="/admin/hotel_management/booking/">📅 Bookings</a>
+        <a href="#">🍽️ Restaurant</a>
+        <a href="#">💰 Billing</a>
+        <a href="#">👨‍💼 Staff</a>
+        <a href="#">📊 Reports</a>
+        <a href="/admin/">⚙️ Admin</a>
+    </div>
+
+</div>
+
+
+<div class="main">
+
+    <h1>Edit Room {{ room.room_number }}</h1>
+
+    <div class="form-box">
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <label>Room Number</label>
+            <input
+                type="text"
+                name="room_number"
+                value="{{ room.room_number }}"
+                required
+            >
+
+            <label>Room Type</label>
+            <select name="room_type">
+
+                <option value="Single"
+                    {% if room.room_type == "Single" %}selected{% endif %}>
+                    Single
+                </option>
+
+                <option value="Double"
+                    {% if room.room_type == "Double" %}selected{% endif %}>
+                    Double
+                </option>
+
+                <option value="Deluxe"
+                    {% if room.room_type == "Deluxe" %}selected{% endif %}>
+                    Deluxe
+                </option>
+
+                <option value="Suite"
+                    {% if room.room_type == "Suite" %}selected{% endif %}>
+                    Suite
+                </option>
+
+            </select>
+
+            <label>Price Per Night</label>
+            <input
+                type="number"
+                name="price_per_night"
+                value="{{ room.price_per_night }}"
+                step="0.01"
+                required
+            >
+
+            <label>Status</label>
+            <select name="status">
+
+                <option value="Available"
+                    {% if room.status == "Available" %}selected{% endif %}>
+                    Available
+                </option>
+
+                <option value="Occupied"
+                    {% if room.status == "Occupied" %}selected{% endif %}>
+                    Occupied
+                </option>
+
+                <option value="Maintenance"
+                    {% if room.status == "Maintenance" %}selected{% endif %}>
+                    Maintenance
+                </option>
+
+            </select>
+
+            <button type="submit">
+                Save Changes
+            </button>
+
+            <a href="/rooms/" class="cancel">
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

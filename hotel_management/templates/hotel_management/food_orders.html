@@ -1,0 +1,1352 @@
+{% extends 'hotel_management/base.html' %}
+
+{% block title %}Food Orders | Hotel Sugam{% endblock %}
+
+{% block page_title %}Food Orders{% endblock %}
+
+{% block content %}
+
+<style>
+
+    /* =====================================================
+       FOOD ORDERS - BLACK + RADIANT RED THEME
+    ===================================================== */
+
+    .food-orders-page {
+        color: #ffffff;
+    }
+
+    /* PAGE HEADER */
+
+    .food-orders-page .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 25px;
+    }
+
+    .food-orders-page .section-header h2 {
+        margin: 0 0 6px;
+        color: #ffffff;
+        font-size: 24px;
+    }
+
+    .food-orders-page .section-header p {
+        margin: 0;
+        color: #888;
+        font-size: 13px;
+    }
+
+
+    /* =====================================================
+       BUTTONS
+    ===================================================== */
+
+    .food-orders-page .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 9px 14px;
+
+        border-radius: 8px;
+        border: 1px solid transparent;
+
+        color: #ffffff;
+        text-decoration: none;
+
+        font-size: 11px;
+        font-weight: 700;
+
+        cursor: pointer;
+
+        transition: all 0.25s ease;
+    }
+
+    .food-orders-page .btn-primary {
+        background:
+            linear-gradient(
+                135deg,
+                #ff0000,
+                #a90000
+            );
+
+        border-color: #ff3333;
+
+        box-shadow:
+            0 0 15px rgba(255, 0, 0, 0.18);
+    }
+
+    .food-orders-page .btn-primary:hover {
+        transform: translateY(-2px);
+
+        box-shadow:
+            0 0 22px rgba(255, 0, 0, 0.42);
+    }
+
+    .food-orders-page .btn-dark {
+        background: #151515;
+        border-color: #3b3b3b;
+    }
+
+    .food-orders-page .btn-dark:hover {
+        background: #220000;
+        border-color: #ff3333;
+    }
+
+
+    /* =====================================================
+       CARDS
+    ===================================================== */
+
+    .food-orders-page .card {
+        background:
+            linear-gradient(
+                145deg,
+                #0d0d0d,
+                #140000
+            );
+
+        border:
+            1px solid rgba(255, 0, 0, 0.22);
+
+        border-radius: 15px;
+
+        padding: 22px;
+
+        box-shadow:
+            0 0 22px rgba(255, 0, 0, 0.04);
+
+        transition: 0.25s ease;
+    }
+
+    .food-orders-page .card:hover {
+        border-color:
+            rgba(255, 0, 0, 0.40);
+    }
+
+
+    /* =====================================================
+       STATISTICS
+    ===================================================== */
+
+    .food-orders-page .stats-grid {
+        display: grid;
+
+        grid-template-columns:
+            repeat(4, 1fr);
+
+        gap: 18px;
+
+        margin-bottom: 25px;
+    }
+
+    .food-orders-page .stat-card {
+        min-height: 135px;
+    }
+
+    .food-orders-page .stat-top {
+        display: flex;
+
+        justify-content: space-between;
+        align-items: center;
+
+        margin-bottom: 16px;
+    }
+
+    .food-orders-page .stat-label {
+        color: #888;
+
+        font-size: 11px;
+        font-weight: 600;
+
+        text-transform: uppercase;
+
+        letter-spacing: 0.5px;
+    }
+
+    .food-orders-page .stat-icon {
+        width: 40px;
+        height: 40px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 11px;
+
+        background:
+            rgba(255, 0, 0, 0.10);
+
+        border:
+            1px solid rgba(255, 0, 0, 0.20);
+
+        color: #ff4444;
+
+        font-size: 18px;
+    }
+
+    .food-orders-page .stat-value {
+        color: #ffffff;
+
+        font-size: 23px;
+        font-weight: 700;
+    }
+
+    .food-orders-page .stat-sub {
+        margin-top: 5px;
+
+        color: #666;
+
+        font-size: 10px;
+    }
+
+
+    /* =====================================================
+       TABLE SECTION
+    ===================================================== */
+
+    .food-orders-page .table-card {
+        padding: 0;
+
+        overflow: hidden;
+    }
+
+    .food-orders-page .table-header {
+        padding: 22px;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        border-bottom:
+            1px solid #252525;
+    }
+
+    .food-orders-page .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .food-orders-page table {
+        width: 100%;
+        min-width: 1050px;
+
+        border-collapse: collapse;
+    }
+
+    .food-orders-page thead {
+        background:
+            linear-gradient(
+                90deg,
+                #180000,
+                #100000
+            );
+    }
+
+    .food-orders-page th {
+        padding: 14px 12px;
+
+        text-align: left;
+
+        color: #ff5555;
+
+        font-size: 10px;
+        font-weight: 700;
+
+        text-transform: uppercase;
+
+        letter-spacing: 0.5px;
+
+        border-bottom:
+            1px solid rgba(255, 0, 0, 0.30);
+    }
+
+    .food-orders-page td {
+        padding: 14px 12px;
+
+        color: #cfcfcf;
+
+        font-size: 12px;
+
+        border-bottom:
+            1px solid #222;
+
+        vertical-align: middle;
+    }
+
+    .food-orders-page tbody tr {
+        transition: 0.2s ease;
+    }
+
+    .food-orders-page tbody tr:hover {
+        background:
+            rgba(255, 0, 0, 0.045);
+    }
+
+
+    /* FOOD ITEM */
+
+    .food-item {
+        display: flex;
+
+        align-items: center;
+
+        gap: 10px;
+    }
+
+    .food-item-icon {
+        width: 40px;
+        height: 40px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        flex-shrink: 0;
+
+        border-radius: 11px;
+
+        background:
+            linear-gradient(
+                135deg,
+                rgba(255, 0, 0, 0.14),
+                rgba(100, 0, 0, 0.04)
+            );
+
+        border:
+            1px solid rgba(255, 0, 0, 0.16);
+
+        font-size: 18px;
+    }
+
+    .food-item strong {
+        display: block;
+
+        color: #ffffff;
+
+        font-size: 12px;
+    }
+
+    .food-item span {
+        display: block;
+
+        margin-top: 3px;
+
+        color: #666;
+
+        font-size: 10px;
+    }
+
+
+    /* GUEST */
+
+    .guest-name {
+        display: block;
+
+        color: #dddddd;
+
+        font-size: 12px;
+    }
+
+    .guest-booking {
+        display: block;
+
+        margin-top: 3px;
+
+        color: #666;
+
+        font-size: 10px;
+    }
+
+
+    /* ROOM */
+
+    .room-badge {
+        display: inline-flex;
+
+        align-items: center;
+        justify-content: center;
+
+        padding: 6px 9px;
+
+        border-radius: 8px;
+
+        background:
+            rgba(255, 0, 0, 0.08);
+
+        border:
+            1px solid rgba(255, 0, 0, 0.18);
+
+        color: #ff6666;
+
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+
+    /* =====================================================
+       BADGES
+    ===================================================== */
+
+    .food-orders-page .badge {
+        display: inline-flex;
+
+        align-items: center;
+        justify-content: center;
+
+        padding: 6px 9px;
+
+        border-radius: 20px;
+
+        font-size: 10px;
+        font-weight: 700;
+
+        white-space: nowrap;
+    }
+
+    .badge-blue {
+        color: #ff9b9b;
+
+        background: #260000;
+
+        border:
+            1px solid #720000;
+    }
+
+    .badge-yellow {
+        color: #ffb0b0;
+
+        background: #2b0000;
+
+        border:
+            1px solid #8a0000;
+    }
+
+    .badge-green {
+        color: #ffaaaa;
+
+        background: #280000;
+
+        border:
+            1px solid #a00000;
+    }
+
+    .badge-red {
+        color: #ff7777;
+
+        background: #350000;
+
+        border:
+            1px solid #ff2222;
+    }
+
+
+    /* =====================================================
+       PRICE
+    ===================================================== */
+
+    .unit-price {
+        color: #aaa;
+        font-size: 12px;
+    }
+
+    .total-price {
+        color: #ff4444;
+
+        font-size: 13px;
+        font-weight: 700;
+
+        text-shadow:
+            0 0 8px rgba(255, 0, 0, 0.20);
+    }
+
+    .order-date {
+        color: #aaa;
+
+        font-size: 11px;
+    }
+
+    .order-time {
+        display: block;
+
+        margin-top: 3px;
+
+        color: #666;
+
+        font-size: 10px;
+    }
+
+
+    /* =====================================================
+       STATUS FORM
+    ===================================================== */
+
+    .status-form {
+        display: flex;
+
+        gap: 5px;
+
+        align-items: center;
+    }
+
+    .status-form select {
+        width: 120px;
+
+        padding: 7px 8px;
+
+        color: #ffffff;
+
+        background: #111111;
+
+        border:
+            1px solid #3b3b3b;
+
+        border-radius: 7px;
+
+        font-size: 10px;
+
+        outline: none;
+    }
+
+    .status-form select:focus {
+        border-color: #ff3333;
+
+        box-shadow:
+            0 0 10px rgba(255, 0, 0, 0.15);
+    }
+
+    .status-form option {
+        background: #111111;
+        color: #ffffff;
+    }
+
+
+    /* =====================================================
+       EMPTY STATE
+    ===================================================== */
+
+    .food-orders-page .empty {
+        text-align: center;
+
+        padding: 65px 20px;
+
+        color: #777;
+    }
+
+    .empty-icon {
+        width: 70px;
+        height: 70px;
+
+        margin: 0 auto 15px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 20px;
+
+        background:
+            rgba(255, 0, 0, 0.08);
+
+        border:
+            1px solid rgba(255, 0, 0, 0.20);
+
+        color: #ff4444;
+
+        font-size: 30px;
+
+        box-shadow:
+            0 0 20px rgba(255, 0, 0, 0.08);
+    }
+
+    .food-orders-page .empty strong {
+        display: block;
+
+        color: #ffffff;
+
+        font-size: 15px;
+
+        margin-bottom: 7px;
+    }
+
+    .food-orders-page .empty span {
+        display: block;
+
+        margin-bottom: 18px;
+
+        color: #777;
+
+        font-size: 12px;
+    }
+
+
+    /* =====================================================
+       ORDER WORKFLOW
+    ===================================================== */
+
+    .workflow-section {
+        margin-top: 28px;
+    }
+
+    .workflow-grid {
+        display: grid;
+
+        grid-template-columns:
+            repeat(3, 1fr);
+
+        gap: 18px;
+    }
+
+    .workflow-card {
+        position: relative;
+
+        padding: 20px;
+
+        background:
+            linear-gradient(
+                145deg,
+                #0d0d0d,
+                #150000
+            );
+
+        border:
+            1px solid rgba(255, 0, 0, 0.22);
+
+        border-radius: 14px;
+
+        transition: 0.25s ease;
+    }
+
+    .workflow-card:hover {
+        transform: translateY(-3px);
+
+        border-color: #ff3333;
+
+        box-shadow:
+            0 0 20px rgba(255, 0, 0, 0.10);
+    }
+
+    .workflow-top {
+        display: flex;
+
+        align-items: center;
+
+        gap: 12px;
+
+        margin-bottom: 15px;
+    }
+
+    .workflow-number {
+        width: 42px;
+        height: 42px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 11px;
+
+        background:
+            rgba(255, 0, 0, 0.10);
+
+        border:
+            1px solid rgba(255, 0, 0, 0.20);
+
+        color: #ff4444;
+
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .workflow-card strong {
+        color: #ffffff;
+
+        font-size: 14px;
+    }
+
+    .workflow-card p {
+        margin: 0;
+
+        color: #777;
+
+        font-size: 11px;
+
+        line-height: 1.6;
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+
+    @media (max-width: 1100px) {
+
+        .food-orders-page .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .workflow-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+
+    @media (max-width: 700px) {
+
+        .food-orders-page .section-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .food-orders-page .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .workflow-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .food-orders-page .card {
+            padding: 16px;
+        }
+    }
+
+</style>
+
+
+<div class="food-orders-page">
+
+
+    <!-- =====================================================
+         PAGE HEADER
+    ===================================================== -->
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>
+                Food Order Management
+            </h2>
+
+            <p>
+                Track restaurant orders and their preparation status
+            </p>
+
+        </div>
+
+
+        <a
+            href="{% url 'restaurant' %}"
+            class="btn btn-primary"
+        >
+            + New Food Order
+        </a>
+
+    </div>
+
+
+    <!-- =====================================================
+         ORDER SUMMARY
+    ===================================================== -->
+
+    <div class="stats-grid">
+
+
+        <div class="card stat-card">
+
+            <div class="stat-top">
+
+                <span class="stat-label">
+                    Total Orders
+                </span>
+
+                <div class="stat-icon">
+                    🍽️
+                </div>
+
+            </div>
+
+            <div class="stat-value">
+                {{ orders|length }}
+            </div>
+
+            <div class="stat-sub">
+                All restaurant orders
+            </div>
+
+        </div>
+
+
+        <div class="card stat-card">
+
+            <div class="stat-top">
+
+                <span class="stat-label">
+                    Order Status
+                </span>
+
+                <div class="stat-icon">
+                    ●
+                </div>
+
+            </div>
+
+            <div
+                class="stat-value"
+                style="color:#ff4444;"
+            >
+                Live
+            </div>
+
+            <div class="stat-sub">
+                Orders updated in real time
+            </div>
+
+        </div>
+
+
+        <div class="card stat-card">
+
+            <div class="stat-top">
+
+                <span class="stat-label">
+                    Restaurant
+                </span>
+
+                <div class="stat-icon">
+                    ♨
+                </div>
+
+            </div>
+
+            <div class="stat-value">
+                Active
+            </div>
+
+            <div class="stat-sub">
+                Food service available
+            </div>
+
+        </div>
+
+
+        <div class="card stat-card">
+
+            <div class="stat-top">
+
+                <span class="stat-label">
+                    Billing
+                </span>
+
+                <div class="stat-icon">
+                    ₹
+                </div>
+
+            </div>
+
+            <div class="stat-value">
+                Linked
+            </div>
+
+            <div class="stat-sub">
+                Orders included in booking bills
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =====================================================
+         ORDERS TABLE
+    ===================================================== -->
+
+    <div class="card table-card">
+
+
+        <div class="table-header">
+
+            <div>
+
+                <h2 style="
+                    margin:0 0 6px;
+                    color:#ffffff;
+                    font-size:19px;
+                ">
+                    All Food Orders
+                </h2>
+
+                <p style="
+                    margin:0;
+                    color:#777;
+                    font-size:12px;
+                ">
+                    Restaurant order history
+                </p>
+
+            </div>
+
+
+            <a
+                href="{% url 'restaurant' %}"
+                class="btn btn-dark"
+            >
+                View Menu
+            </a>
+
+        </div>
+
+
+        {% if orders %}
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Food Item
+                        </th>
+
+                        <th>
+                            Guest
+                        </th>
+
+                        <th>
+                            Room
+                        </th>
+
+                        <th>
+                            Quantity
+                        </th>
+
+                        <th>
+                            Price
+                        </th>
+
+                        <th>
+                            Total
+                        </th>
+
+                        <th>
+                            Date
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    {% for order in orders %}
+
+                    <tr>
+
+
+                        <!-- FOOD -->
+
+                        <td>
+
+                            <div class="food-item">
+
+                                <div class="food-item-icon">
+                                    🍽️
+                                </div>
+
+
+                                <div>
+
+                                    <strong>
+                                        {{ order.food_item.name }}
+                                    </strong>
+
+                                    <span>
+                                        {{ order.food_item.category }}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- GUEST -->
+
+                        <td>
+
+                            {% if order.booking %}
+
+                                <div>
+
+                                    <span class="guest-name">
+                                        {{ order.booking.guest.name }}
+                                    </span>
+
+                                    <span class="guest-booking">
+                                        Booking #{{ order.booking.id }}
+                                    </span>
+
+                                </div>
+
+                            {% else %}
+
+                                <span class="badge badge-blue">
+                                    Walk-in
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- ROOM -->
+
+                        <td>
+
+                            {% if order.booking %}
+
+                                <span class="room-badge">
+                                    Room {{ order.booking.room.room_number }}
+                                </span>
+
+                            {% else %}
+
+                                <span style="
+                                    color:#555;
+                                    font-size:11px;
+                                ">
+                                    —
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- QUANTITY -->
+
+                        <td>
+
+                            <span class="badge badge-blue">
+                                × {{ order.quantity }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- UNIT PRICE -->
+
+                        <td>
+
+                            <span class="unit-price">
+                                ₹{{ order.food_item.price|floatformat:2 }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- TOTAL -->
+
+                        <td>
+
+                            <strong class="total-price">
+                                ₹{{ order.total_price|floatformat:2 }}
+                            </strong>
+
+                        </td>
+
+
+                        <!-- DATE -->
+
+                        <td>
+
+                            <span class="order-date">
+                                {{ order.order_date|date:"d M Y" }}
+                            </span>
+
+                            <span class="order-time">
+                                {{ order.order_date|date:"h:i A" }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- STATUS -->
+
+                        <td>
+
+                            {% if order.status == 'Pending' %}
+
+                                <span class="badge badge-yellow">
+                                    ● Pending
+                                </span>
+
+                            {% elif order.status == 'Preparing' %}
+
+                                <span class="badge badge-blue">
+                                    ● Preparing
+                                </span>
+
+                            {% elif order.status == 'Completed' %}
+
+                                <span class="badge badge-green">
+                                    ● Completed
+                                </span>
+
+                            {% elif order.status == 'Cancelled' %}
+
+                                <span class="badge badge-red">
+                                    ● Cancelled
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge">
+                                    {{ order.status }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- ACTION -->
+
+                        <td>
+
+                            <form
+                                method="POST"
+                                action="{% url 'update_food_order_status' order.id %}"
+                                class="status-form"
+                            >
+
+                                {% csrf_token %}
+
+
+                                <select name="status">
+
+                                    <option
+                                        value="Pending"
+                                        {% if order.status == 'Pending' %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Pending
+                                    </option>
+
+
+                                    <option
+                                        value="Preparing"
+                                        {% if order.status == 'Preparing' %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Preparing
+                                    </option>
+
+
+                                    <option
+                                        value="Completed"
+                                        {% if order.status == 'Completed' %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Completed
+                                    </option>
+
+
+                                    <option
+                                        value="Cancelled"
+                                        {% if order.status == 'Cancelled' %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Cancelled
+                                    </option>
+
+                                </select>
+
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary"
+                                >
+                                    Save
+                                </button>
+
+                            </form>
+
+                        </td>
+
+
+                    </tr>
+
+                    {% endfor %}
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        {% else %}
+
+
+        <!-- =================================================
+             EMPTY STATE
+        ================================================= -->
+
+        <div class="empty">
+
+            <div class="empty-icon">
+                🍽️
+            </div>
+
+            <strong>
+                No Food Orders
+            </strong>
+
+            <span>
+                Restaurant orders will appear here.
+            </span>
+
+            <a
+                href="{% url 'restaurant' %}"
+                class="btn btn-primary"
+            >
+                + Create Food Order
+            </a>
+
+        </div>
+
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =====================================================
+         ORDER WORKFLOW
+    ===================================================== -->
+
+    <div class="workflow-section">
+
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Order Workflow
+                </h2>
+
+                <p>
+                    Restaurant order processing
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="workflow-grid">
+
+
+            <!-- PENDING -->
+
+            <div class="workflow-card">
+
+                <div class="workflow-top">
+
+                    <div class="workflow-number">
+                        01
+                    </div>
+
+                    <strong>
+                        Pending
+                    </strong>
+
+                </div>
+
+                <p>
+                    New orders waiting to be prepared.
+                </p>
+
+            </div>
+
+
+            <!-- PREPARING -->
+
+            <div class="workflow-card">
+
+                <div class="workflow-top">
+
+                    <div class="workflow-number">
+                        02
+                    </div>
+
+                    <strong>
+                        Preparing
+                    </strong>
+
+                </div>
+
+                <p>
+                    Kitchen is currently preparing the order.
+                </p>
+
+            </div>
+
+
+            <!-- COMPLETED -->
+
+            <div class="workflow-card">
+
+                <div class="workflow-top">
+
+                    <div class="workflow-number">
+                        03
+                    </div>
+
+                    <strong>
+                        Completed
+                    </strong>
+
+                </div>
+
+                <p>
+                    Order has been prepared and completed.
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+</div>
+
+{% endblock %}

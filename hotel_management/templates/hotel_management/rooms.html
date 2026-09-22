@@ -1,0 +1,961 @@
+{% extends 'hotel_management/base.html' %}
+
+{% block title %}Rooms | Hotel Sugam{% endblock %}
+
+{% block page_title %}
+Room Management
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    /* =====================================================
+       ROOMS PAGE
+    ===================================================== */
+
+    .rooms-page {
+        width: 100%;
+    }
+
+    .room-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .room-header h2 {
+        margin: 0;
+        color: #ffffff;
+        font-size: 24px;
+    }
+
+    .room-header p {
+        margin: 7px 0 0;
+        color: #777;
+        font-size: 13px;
+    }
+
+    /* =====================================================
+       STATS
+    ===================================================== */
+
+    .room-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-bottom: 28px;
+    }
+
+    .room-stat {
+        background: #080808;
+        border: 1px solid #1d1d1d;
+        border-radius: 16px;
+        padding: 20px;
+        transition: .25s ease;
+    }
+
+    .room-stat:hover {
+        border-color: rgba(255, 40, 40, .55);
+        box-shadow: 0 0 25px rgba(255, 0, 0, .08);
+        transform: translateY(-2px);
+    }
+
+    .stat-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .stat-label {
+        color: #888;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .7px;
+    }
+
+    .stat-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 0, 0, .08);
+        border: 1px solid rgba(255, 0, 0, .18);
+        color: #ff3030;
+        font-size: 16px;
+        box-shadow: 0 0 18px rgba(255, 0, 0, .08);
+    }
+
+    .stat-value {
+        margin-top: 16px;
+        color: #ffffff;
+        font-size: 27px;
+        font-weight: 800;
+    }
+
+    .stat-sub {
+        margin-top: 5px;
+        color: #666;
+        font-size: 10px;
+    }
+
+    /* =====================================================
+       MAIN ROOM CARD
+    ===================================================== */
+
+    .room-card {
+        background: #080808;
+        border: 1px solid #1d1d1d;
+        border-radius: 18px;
+        overflow: hidden;
+    }
+
+    .room-card-header {
+        padding: 22px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #1a1a1a;
+    }
+
+    .room-card-header h2 {
+        margin: 0;
+        color: #fff;
+        font-size: 18px;
+    }
+
+    .room-card-header p {
+        margin: 6px 0 0;
+        color: #666;
+        font-size: 11px;
+    }
+
+    /* =====================================================
+       BUTTONS
+    ===================================================== */
+
+    .red-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 10px 15px;
+        border-radius: 9px;
+        border: 1px solid rgba(255, 40, 40, .6);
+        background: linear-gradient(
+            135deg,
+            #ff2525,
+            #b30000
+        );
+        color: #fff;
+        text-decoration: none;
+        font-size: 11px;
+        font-weight: 700;
+        box-shadow: 0 0 18px rgba(255, 0, 0, .12);
+        transition: .2s ease;
+    }
+
+    .red-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 0 28px rgba(255, 0, 0, .25);
+    }
+
+    .dark-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 7px 11px;
+        border-radius: 8px;
+        border: 1px solid #292929;
+        background: #111;
+        color: #ddd;
+        text-decoration: none;
+        font-size: 10px;
+        transition: .2s ease;
+    }
+
+    .dark-btn:hover {
+        border-color: #ff3030;
+        color: #ff4444;
+        background: #160000;
+    }
+
+    /* =====================================================
+       TABLE
+    ===================================================== */
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .room-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .room-table th {
+        padding: 14px 20px;
+        text-align: left;
+        background: #0d0d0d;
+        color: #777;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+        border-bottom: 1px solid #1c1c1c;
+    }
+
+    .room-table td {
+        padding: 17px 20px;
+        border-bottom: 1px solid #151515;
+        color: #bbb;
+        font-size: 12px;
+    }
+
+    .room-table tbody tr {
+        transition: .2s ease;
+    }
+
+    .room-table tbody tr:hover {
+        background: rgba(255, 0, 0, .025);
+    }
+
+    .room-number-box {
+        width: 42px;
+        height: 42px;
+        border-radius: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(
+            135deg,
+            #ff3030,
+            #8f0000
+        );
+        color: #fff;
+        font-size: 11px;
+        font-weight: 800;
+        box-shadow: 0 0 18px rgba(255, 0, 0, .12);
+    }
+
+    .room-info {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+    }
+
+    .room-name {
+        display: block;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .room-id {
+        display: block;
+        margin-top: 3px;
+        color: #555;
+        font-size: 9px;
+    }
+
+    /* =====================================================
+       TYPE BADGE
+    ===================================================== */
+
+    .type-badge {
+        display: inline-flex;
+        padding: 7px 10px;
+        border-radius: 8px;
+        background: rgba(255, 0, 0, .06);
+        border: 1px solid rgba(255, 0, 0, .15);
+        color: #ff4b4b;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .price {
+        color: #fff;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .per-night {
+        display: block;
+        margin-top: 3px;
+        color: #555;
+        font-size: 9px;
+    }
+
+    /* =====================================================
+       STATUS BADGES
+    ===================================================== */
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 9px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 600;
+    }
+
+    .status-available {
+        background: rgba(0, 255, 120, .07);
+        border: 1px solid rgba(0, 255, 120, .15);
+        color: #00e878;
+    }
+
+    .status-occupied {
+        background: rgba(255, 190, 0, .07);
+        border: 1px solid rgba(255, 190, 0, .15);
+        color: #ffc400;
+    }
+
+    .status-maintenance {
+        background: rgba(255, 0, 0, .08);
+        border: 1px solid rgba(255, 0, 0, .18);
+        color: #ff3d3d;
+    }
+
+    .status-default {
+        background: #151515;
+        border: 1px solid #282828;
+        color: #999;
+    }
+
+    /* =====================================================
+       EMPTY STATE
+    ===================================================== */
+
+    .empty-state {
+        text-align: center;
+        padding: 65px 20px;
+    }
+
+    .empty-icon {
+        width: 70px;
+        height: 70px;
+        margin: 0 auto 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 20px;
+        background: rgba(255, 0, 0, .07);
+        border: 1px solid rgba(255, 0, 0, .15);
+        color: #ff3030;
+        font-size: 29px;
+        box-shadow: 0 0 25px rgba(255, 0, 0, .08);
+    }
+
+    .empty-state strong {
+        display: block;
+        color: #fff;
+        font-size: 15px;
+        margin-bottom: 7px;
+    }
+
+    .empty-state span {
+        display: block;
+        color: #666;
+        font-size: 11px;
+        margin-bottom: 18px;
+    }
+
+    /* =====================================================
+       ROOM TYPES
+    ===================================================== */
+
+    .room-types-section {
+        margin-top: 30px;
+    }
+
+    .room-types-header {
+        margin-bottom: 18px;
+    }
+
+    .room-types-header h2 {
+        margin: 0;
+        color: #fff;
+        font-size: 18px;
+    }
+
+    .room-types-header p {
+        margin: 6px 0 0;
+        color: #666;
+        font-size: 11px;
+    }
+
+    .room-types-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+    }
+
+    .room-type-card {
+        background: #080808;
+        border: 1px solid #1c1c1c;
+        border-radius: 15px;
+        padding: 20px;
+        transition: .25s ease;
+    }
+
+    .room-type-card:hover {
+        border-color: rgba(255, 0, 0, .45);
+        box-shadow: 0 0 25px rgba(255, 0, 0, .07);
+        transform: translateY(-2px);
+    }
+
+    .room-type-icon {
+        font-size: 25px;
+        margin-bottom: 12px;
+        filter: grayscale(.2);
+    }
+
+    .room-type-card strong {
+        color: #fff;
+        font-size: 14px;
+    }
+
+    .room-type-card p {
+        margin: 6px 0 0;
+        color: #666;
+        font-size: 11px;
+        line-height: 1.6;
+    }
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+
+    @media (max-width: 1000px) {
+
+        .room-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .room-types-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+    }
+
+    @media (max-width: 650px) {
+
+        .room-header,
+        .room-card-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .room-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .room-types-grid {
+            grid-template-columns: 1fr;
+        }
+
+    }
+
+</style>
+
+
+<div class="rooms-page">
+
+    <!-- =====================================================
+         HEADER
+    ===================================================== -->
+
+    <div class="room-header">
+
+        <div>
+
+            <h2>
+                Room Management
+            </h2>
+
+            <p>
+                Manage rooms, pricing and availability
+            </p>
+
+        </div>
+
+        <a
+            href="{% url 'add_room' %}"
+            class="red-btn">
+
+            + Add Room
+
+        </a>
+
+    </div>
+
+
+    <!-- =====================================================
+         ROOM STATISTICS
+    ===================================================== -->
+
+    <div class="room-stats">
+
+        <!-- TOTAL -->
+
+        <div class="room-stat">
+
+            <div class="stat-top">
+
+                <span class="stat-label">
+                    Total Rooms
+                </span>
+
+                <div class="stat-icon">
+                    🏨
+                </div>
+
+            </div>
+
+            <div class="stat-value">
+                {{ rooms|length }}
+            </div>
+
+            <div class="stat-sub">
+                Hotel room inventory
+            </div>
+
+        </div>
+
+
+        <!-- AVAILABLE -->
+
+        <div class="room-stat">
+
+            <div class="stat-top">
+
+                <span class="stat-label">
+                    Available
+                </span>
+
+                <div class="stat-icon">
+                    ✓
+                </div>
+
+            </div>
+
+            <div
+                class="stat-value"
+                style="color:#00e878;">
+
+                {{ available_rooms }}
+
+            </div>
+
+            <div class="stat-sub">
+                Ready for booking
+            </div>
+
+        </div>
+
+
+        <!-- OCCUPIED -->
+
+        <div class="room-stat">
+
+            <div class="stat-top">
+
+                <span class="stat-label">
+                    Occupied
+                </span>
+
+                <div class="stat-icon">
+                    ●
+                </div>
+
+            </div>
+
+            <div
+                class="stat-value"
+                style="color:#ffc400;">
+
+                {{ occupied_rooms }}
+
+            </div>
+
+            <div class="stat-sub">
+                Currently occupied
+            </div>
+
+        </div>
+
+
+        <!-- MAINTENANCE -->
+
+        <div class="room-stat">
+
+            <div class="stat-top">
+
+                <span class="stat-label">
+                    Maintenance
+                </span>
+
+                <div class="stat-icon">
+                    ⚙
+                </div>
+
+            </div>
+
+            <div
+                class="stat-value"
+                style="color:#ff3838;">
+
+                {{ maintenance_rooms }}
+
+            </div>
+
+            <div class="stat-sub">
+                Temporarily unavailable
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         ALL ROOMS
+    ===================================================== -->
+
+    <div class="room-card">
+
+        <div class="room-card-header">
+
+            <div>
+
+                <h2>
+                    All Rooms
+                </h2>
+
+                <p>
+                    Current room inventory
+                </p>
+
+            </div>
+
+            <a
+                href="{% url 'add_room' %}"
+                class="red-btn">
+
+                + New Room
+
+            </a>
+
+        </div>
+
+
+        {% if rooms %}
+
+        <div class="table-wrapper">
+
+            <table class="room-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Room</th>
+
+                        <th>Type</th>
+
+                        <th>Price / Night</th>
+
+                        <th>Status</th>
+
+                        <th>Actions</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                {% for room in rooms %}
+
+                    <tr>
+
+                        <!-- ROOM -->
+
+                        <td>
+
+                            <div class="room-info">
+
+                                <div class="room-number-box">
+
+                                    {{ room.room_number }}
+
+                                </div>
+
+                                <div>
+
+                                    <strong class="room-name">
+
+                                        Room {{ room.room_number }}
+
+                                    </strong>
+
+                                    <span class="room-id">
+
+                                        Room ID #{{ room.id }}
+
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- TYPE -->
+
+                        <td>
+
+                            <span class="type-badge">
+
+                                {{ room.room_type }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- PRICE -->
+
+                        <td>
+
+                            <strong class="price">
+
+                                ₹{{ room.price_per_night|floatformat:2 }}
+
+                            </strong>
+
+                            <span class="per-night">
+
+                                Per night
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- STATUS -->
+
+                        <td>
+
+                            {% if room.status == 'Available' %}
+
+                                <span class="status-badge status-available">
+
+                                    ● Available
+
+                                </span>
+
+                            {% elif room.status == 'Occupied' %}
+
+                                <span class="status-badge status-occupied">
+
+                                    ● Occupied
+
+                                </span>
+
+                            {% elif room.status == 'Maintenance' %}
+
+                                <span class="status-badge status-maintenance">
+
+                                    ● Maintenance
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="status-badge status-default">
+
+                                    {{ room.status }}
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- ACTION -->
+
+                        <td>
+
+                            <a
+                                href="{% url 'edit_room' room.id %}"
+                                class="dark-btn">
+
+                                ✏ Edit
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        {% else %}
+
+        <!-- EMPTY STATE -->
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                🏨
+            </div>
+
+            <strong>
+                No Rooms Found
+            </strong>
+
+            <span>
+                Add your first room to the hotel inventory.
+            </span>
+
+            <a
+                href="{% url 'add_room' %}"
+                class="red-btn">
+
+                + Add Room
+
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- =====================================================
+         ROOM TYPES
+    ===================================================== -->
+
+    <div class="room-types-section">
+
+        <div class="room-types-header">
+
+            <h2>
+                Room Types
+            </h2>
+
+            <p>
+                Available accommodation categories
+            </p>
+
+        </div>
+
+
+        <div class="room-types-grid">
+
+
+            <!-- SINGLE -->
+
+            <div class="room-type-card">
+
+                <div class="room-type-icon">
+                    🛏️
+                </div>
+
+                <strong>
+                    Single
+                </strong>
+
+                <p>
+                    Comfortable room for
+                    individual guests.
+                </p>
+
+            </div>
+
+
+            <!-- DOUBLE -->
+
+            <div class="room-type-card">
+
+                <div class="room-type-icon">
+                    🛏️
+                </div>
+
+                <strong>
+                    Double
+                </strong>
+
+                <p>
+                    Room suitable for
+                    two guests.
+                </p>
+
+            </div>
+
+
+            <!-- DELUXE -->
+
+            <div class="room-type-card">
+
+                <div class="room-type-icon">
+                    ✨
+                </div>
+
+                <strong>
+                    Deluxe
+                </strong>
+
+                <p>
+                    Enhanced room with
+                    additional comfort.
+                </p>
+
+            </div>
+
+
+            <!-- SUITE -->
+
+            <div class="room-type-card">
+
+                <div class="room-type-icon">
+                    👑
+                </div>
+
+                <strong>
+                    Suite
+                </strong>
+
+                <p>
+                    Premium accommodation
+                    with extra space.
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,711 @@
+{% extends 'hotel_management/base.html' %}
+
+{% block title %}Reports & Analytics{% endblock %}
+
+{% block page_title %}Reports & Analytics{% endblock %}
+
+{% block content %}
+
+<div class="reports-page">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+
+        <div>
+            <h2>Reports & Analytics</h2>
+            <p>Hotel performance and revenue overview</p>
+        </div>
+
+        <button
+            onclick="window.print()"
+            class="btn btn-primary"
+        >
+            🖨 Print Report
+        </button>
+
+    </div>
+
+
+    <!-- =====================================================
+         MAIN STATISTICS
+    ====================================================== -->
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                📋
+            </div>
+
+            <div>
+                <span>Total Bookings</span>
+
+                <strong>
+                    {{ total_bookings }}
+                </strong>
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                👥
+            </div>
+
+            <div>
+                <span>Total Guests</span>
+
+                <strong>
+                    {{ total_guests }}
+                </strong>
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                🏨
+            </div>
+
+            <div>
+                <span>Total Rooms</span>
+
+                <strong>
+                    {{ total_rooms }}
+                </strong>
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                ₹
+            </div>
+
+            <div>
+                <span>Paid Revenue</span>
+
+                <strong>
+                    ₹{{ paid_revenue }}
+                </strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         REVENUE CARDS
+    ====================================================== -->
+
+    <div class="grid-3">
+
+        <!-- ROOM REVENUE -->
+
+        <div class="card revenue-card">
+
+            <div class="revenue-icon">
+                🛏️
+            </div>
+
+            <h3>Room Revenue</h3>
+
+            <div class="revenue-value">
+                ₹{{ room_revenue }}
+            </div>
+
+            <p>
+                Revenue generated from room bookings.
+            </p>
+
+        </div>
+
+
+        <!-- FOOD REVENUE -->
+
+        <div class="card revenue-card">
+
+            <div class="revenue-icon">
+                🍽️
+            </div>
+
+            <h3>Food Revenue</h3>
+
+            <div class="revenue-value">
+                ₹{{ food_revenue }}
+            </div>
+
+            <p>
+                Revenue generated from restaurant orders.
+            </p>
+
+        </div>
+
+
+        <!-- PENDING REVENUE -->
+
+        <div class="card revenue-card">
+
+            <div class="revenue-icon">
+                ⏳
+            </div>
+
+            <h3>Pending Revenue</h3>
+
+            <div class="revenue-value">
+                ₹{{ pending_revenue }}
+            </div>
+
+            <p>
+                Amount currently pending for payment.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         REVENUE BREAKDOWN
+    ====================================================== -->
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h3>Revenue Breakdown</h3>
+
+                <p>
+                    Paid revenue from different hotel services
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- ROOM REVENUE -->
+
+        <div class="revenue-item">
+
+            <div class="revenue-label">
+
+                <strong>
+                    🛏️ Room Revenue
+                </strong>
+
+                <span>
+                    ₹{{ room_revenue }}
+                </span>
+
+            </div>
+
+
+            <div class="progress-bar">
+
+                <div
+                    class="progress-fill"
+                    style="
+                        width:
+                        {% if paid_revenue %}
+                            {% widthratio room_revenue paid_revenue 100 %}
+                        {% else %}
+                            0
+                        {% endif %}%;
+                    "
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- FOOD REVENUE -->
+
+        <div class="revenue-item">
+
+            <div class="revenue-label">
+
+                <strong>
+                    🍽️ Food Revenue
+                </strong>
+
+                <span>
+                    ₹{{ food_revenue }}
+                </span>
+
+            </div>
+
+
+            <div class="progress-bar">
+
+                <div
+                    class="progress-fill"
+                    style="
+                        width:
+                        {% if paid_revenue %}
+                            {% widthratio food_revenue paid_revenue 100 %}
+                        {% else %}
+                            0
+                        {% endif %}%;
+                    "
+                ></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         SUMMARY
+    ====================================================== -->
+
+    <div class="grid-2">
+
+
+        <!-- BOOKING SUMMARY -->
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <h3>📊 Booking Summary</h3>
+
+                    <p>
+                        Overview of hotel operations
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="table-container">
+
+                <table>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Total Bookings
+                            </td>
+
+                            <td>
+                                <strong>
+                                    {{ total_bookings }}
+                                </strong>
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Total Guests
+                            </td>
+
+                            <td>
+                                <strong>
+                                    {{ total_guests }}
+                                </strong>
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Total Rooms
+                            </td>
+
+                            <td>
+                                <strong>
+                                    {{ total_rooms }}
+                                </strong>
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- FINANCIAL SUMMARY -->
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <h3>💰 Financial Summary</h3>
+
+                    <p>
+                        Hotel revenue overview
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="table-container">
+
+                <table>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                Paid Revenue
+                            </td>
+
+                            <td>
+                                <strong>
+                                    ₹{{ paid_revenue }}
+                                </strong>
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Pending Revenue
+                            </td>
+
+                            <td>
+                                <strong>
+                                    ₹{{ pending_revenue }}
+                                </strong>
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                Total Revenue
+                            </td>
+
+                            <td>
+                                <strong>
+                                    ₹{{ paid_revenue|add:pending_revenue }}
+                                </strong>
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         REPORT FOOTER
+    ====================================================== -->
+
+    <div class="card report-footer">
+
+        <div class="report-logo">
+            🏨
+        </div>
+
+        <h3>
+            Hotel Sugam ERP
+        </h3>
+
+        <p>
+            Hotel management, booking, restaurant,
+            billing and reporting system.
+        </p>
+
+        <small>
+            Generated from current system data.
+        </small>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     REPORT PAGE STYLING
+====================================================== -->
+
+<style>
+
+.reports-page {
+    width: 100%;
+}
+
+
+/* REVENUE CARDS */
+
+.revenue-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.revenue-icon {
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: rgba(255, 0, 0, 0.10);
+
+    border: 1px solid rgba(255, 0, 0, 0.25);
+
+    font-size: 21px;
+
+    margin-bottom: 16px;
+}
+
+.revenue-card h3 {
+    margin: 0 0 8px;
+
+    color: #ffffff;
+
+    font-size: 17px;
+}
+
+.revenue-value {
+    color: #ff3333;
+
+    font-size: 28px;
+
+    font-weight: 700;
+
+    margin-bottom: 8px;
+
+    text-shadow:
+        0 0 12px rgba(255, 0, 0, 0.20);
+}
+
+.revenue-card p {
+    margin: 0;
+
+    color: #888888;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+
+/* REVENUE BREAKDOWN */
+
+.revenue-item {
+    margin-bottom: 25px;
+}
+
+.revenue-item:last-child {
+    margin-bottom: 0;
+}
+
+.revenue-label {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 9px;
+
+    color: #ffffff;
+
+    font-size: 13px;
+}
+
+.revenue-label span {
+    color: #ff3333;
+
+    font-weight: 600;
+}
+
+.progress-bar {
+    width: 100%;
+
+    height: 11px;
+
+    background: #202020;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    border: 1px solid #2d2d2d;
+}
+
+.progress-fill {
+    height: 100%;
+
+    min-width: 2px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #b30000,
+            #ff1a1a,
+            #ff4d4d
+        );
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 0 12px rgba(255, 0, 0, 0.35);
+
+    transition: width 0.5s ease;
+}
+
+
+/* REPORT FOOTER */
+
+.report-footer {
+    text-align: center;
+}
+
+.report-logo {
+    width: 58px;
+    height: 58px;
+
+    margin: 0 auto 14px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 15px;
+
+    background: rgba(255, 0, 0, 0.10);
+
+    border: 1px solid rgba(255, 0, 0, 0.28);
+
+    font-size: 25px;
+
+    box-shadow:
+        0 0 20px rgba(255, 0, 0, 0.12);
+}
+
+.report-footer h3 {
+    color: #ffffff;
+
+    margin: 0 0 7px;
+}
+
+.report-footer p {
+    color: #888888;
+
+    margin: 0 0 7px;
+
+    font-size: 13px;
+}
+
+.report-footer small {
+    color: #555555;
+
+    font-size: 11px;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+
+    .grid-2 {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media print {
+
+    .sidebar,
+    .navbar,
+    .page-header,
+    button {
+        display: none !important;
+    }
+
+    body {
+        background: white !important;
+        color: black !important;
+    }
+
+    .card,
+    .stat-card {
+        box-shadow: none !important;
+
+        break-inside: avoid;
+
+        background: white !important;
+
+        border: 1px solid #cccccc !important;
+
+        color: black !important;
+    }
+
+    .card h3,
+    .card p,
+    .stat-card span,
+    .stat-card strong,
+    td,
+    th {
+        color: black !important;
+    }
+
+    .revenue-value,
+    .revenue-label span {
+        color: #111111 !important;
+    }
+
+    .progress-bar {
+        border: 1px solid #cccccc;
+        background: #eeeeee;
+    }
+
+}
+
+</style>
+
+{% endblock %}

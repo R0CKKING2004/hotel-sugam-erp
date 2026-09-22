@@ -1,0 +1,381 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}Hotel Sugam ERP{% endblock %}
+    </title>
+
+    <!-- MAIN CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     MAIN APPLICATION
+===================================================== -->
+
+<div class="app-container">
+
+
+    <!-- =================================================
+         SIDEBAR
+    ================================================== -->
+
+    <aside class="sidebar">
+
+
+        <!-- BRAND -->
+
+        <div class="brand">
+
+            <div class="brand-logo">
+                HS
+            </div>
+
+            <div class="brand-text">
+
+                <h1>
+                    HOTEL SUGAM
+                </h1>
+
+                <span>
+                    HOTEL MANAGEMENT ERP
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- SIDEBAR MENU -->
+
+        <div class="sidebar-section">
+
+            <div class="sidebar-title">
+                Main Menu
+            </div>
+
+
+            <nav class="sidebar-menu">
+
+
+                <!-- DASHBOARD -->
+
+                <a
+                    href="{% url 'dashboard' %}"
+                    class="menu-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+                >
+
+                    <span class="menu-icon">
+                        ▣
+                    </span>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </a>
+
+
+                <!-- BOOKINGS -->
+
+                <a
+                    href="{% url 'bookings' %}"
+                    class="menu-item {% if request.resolver_match.url_name == 'bookings' or request.resolver_match.url_name == 'add_booking' %}active{% endif %}"
+                >
+
+                    <span class="menu-icon">
+                        ▤
+                    </span>
+
+                    <span>
+                        Reservations
+                    </span>
+
+                </a>
+
+
+                <!-- ROOMS -->
+
+                <a
+                    href="{% url 'rooms' %}"
+                    class="menu-item {% if request.resolver_match.url_name == 'rooms' or request.resolver_match.url_name == 'add_room' or request.resolver_match.url_name == 'edit_room' %}active{% endif %}"
+                >
+
+                    <span class="menu-icon">
+                        ▥
+                    </span>
+
+                    <span>
+                        Rooms
+                    </span>
+
+                </a>
+
+
+                <!-- GUESTS -->
+
+                <a
+                    href="{% url 'guests' %}"
+                    class="menu-item {% if request.resolver_match.url_name == 'guests' or request.resolver_match.url_name == 'add_guest' or request.resolver_match.url_name == 'edit_guest' %}active{% endif %}"
+                >
+
+                    <span class="menu-icon">
+                        ◉
+                    </span>
+
+                    <span>
+                        Guests
+                    </span>
+
+                </a>
+
+
+                <!-- RESTAURANT -->
+
+                <a
+                    href="{% url 'restaurant' %}"
+                    class="menu-item {% if request.resolver_match.url_name == 'restaurant' %}active{% endif %}"
+                >
+
+                    <span class="menu-icon">
+                        ◇
+                    </span>
+
+                    <span>
+                        Restaurant
+                    </span>
+
+                </a>
+
+
+                <!-- BILLING -->
+
+                <a
+                    href="{% url 'billing' %}"
+                    class="menu-item {% if request.resolver_match.url_name == 'billing' or request.resolver_match.url_name == 'invoice' %}active{% endif %}"
+                >
+
+                    <span class="menu-icon">
+                        ₹
+                    </span>
+
+                    <span>
+                        Billing
+                    </span>
+
+                </a>
+
+
+                <!-- STAFF -->
+
+                <a
+                    href="{% url 'staff' %}"
+                    class="menu-item {% if request.resolver_match.url_name == 'staff' or request.resolver_match.url_name == 'add_staff' or request.resolver_match.url_name == 'edit_staff' %}active{% endif %}"
+                >
+
+                    <span class="menu-icon">
+                        ♙
+                    </span>
+
+                    <span>
+                        Staff
+                    </span>
+
+                </a>
+
+
+                <!-- REPORTS -->
+
+                <a
+                    href="{% url 'reports' %}"
+                    class="menu-item {% if request.resolver_match.url_name == 'reports' %}active{% endif %}"
+                >
+
+                    <span class="menu-icon">
+                        ▥
+                    </span>
+
+                    <span>
+                        Reports
+                    </span>
+
+                </a>
+
+
+            </nav>
+
+        </div>
+
+
+        <!-- ACCOUNT -->
+
+        <div class="sidebar-section account-section">
+
+            <div class="sidebar-title">
+                Account
+            </div>
+
+
+            <nav class="sidebar-menu">
+
+                <a
+                    href="{% url 'logout' %}"
+                    class="menu-item logout-item"
+                >
+
+                    <span class="menu-icon">
+                        ↪
+                    </span>
+
+                    <span>
+                        Logout
+                    </span>
+
+                </a>
+
+            </nav>
+
+        </div>
+
+
+        <!-- SIDEBAR FOOTER -->
+
+        <div class="sidebar-footer">
+
+            <div class="security-status">
+
+                <span class="status-dot"></span>
+
+                <span>
+                    System Online
+                </span>
+
+            </div>
+
+            <small>
+                Hotel Sugam ERP
+            </small>
+
+        </div>
+
+
+    </aside>
+
+
+    <!-- =================================================
+         MAIN CONTENT
+    ================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- =================================================
+             TOP BAR
+        ================================================== -->
+
+        <header class="topbar">
+
+
+            <div class="topbar-left">
+
+                <div class="breadcrumb">
+
+                    <span>
+                        Reports & Analytics
+                    </span>
+
+                    <span class="breadcrumb-separator">
+                        /
+                    </span>
+
+                    <strong>
+                        ERP
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="topbar-right">
+
+
+                {% if user.is_authenticated %}
+
+                    <div class="user-profile">
+
+
+                        <div class="user-avatar">
+
+                            {{ user.username|first|upper }}
+
+                        </div>
+
+
+                        <div class="user-info">
+
+                            <strong>
+                                {{ user.username }}
+                            </strong>
+
+                            <span>
+
+                                {% if user.is_superuser %}
+                                    Administrator
+                                {% else %}
+                                    Staff
+                                {% endif %}
+
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+                {% endif %}
+
+
+            </div>
+
+
+        </header>
+
+
+        <!-- =================================================
+             PAGE CONTENT
+        ================================================== -->
+
+        <section class="content-area">
+
+
+            {% block content %}
+
+            {% endblock %}
+
+
+        </section>
+
+
+    </main>
+
+
+</div>
+
+
+</body>
+
+</html>

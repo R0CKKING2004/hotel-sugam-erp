@@ -1,0 +1,433 @@
+{% extends 'hotel_management/base.html' %}
+
+{% block title %}New Booking{% endblock %}
+
+{% block page_title %}New Booking{% endblock %}
+
+{% block content %}
+
+<div class="card">
+
+    <div class="card-header">
+        <div>
+            <h3>Create New Booking</h3>
+            <p>Enter guest and stay details</p>
+        </div>
+    </div>
+
+
+    <form method="POST" id="bookingForm">
+
+        {% csrf_token %}
+
+
+        <!-- Guest -->
+
+        <div class="form-group">
+
+            <label for="guest">
+                Guest
+            </label>
+
+            <select
+                name="guest"
+                id="guest"
+                required
+            >
+
+                <option value="">
+                    Select Guest
+                </option>
+
+                {% for guest in guests %}
+
+                <option value="{{ guest.id }}">
+                    {{ guest.name }} - {{ guest.phone }}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <!-- Dates -->
+
+        <div class="grid-2">
+
+            <div class="form-group">
+
+                <label for="check_in">
+                    Check-in Date
+                </label>
+
+                <input
+                    type="date"
+                    name="check_in"
+                    id="check_in"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="check_out">
+                    Check-out Date
+                </label>
+
+                <input
+                    type="date"
+                    name="check_out"
+                    id="check_out"
+                    required
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- Room -->
+
+        <div class="form-group">
+
+            <label for="room">
+                Room
+            </label>
+
+            <select
+                name="room"
+                id="room"
+                required
+            >
+
+                <option value="">
+                    Select check-in and check-out dates first
+                </option>
+
+                {% for room in rooms %}
+
+                <option value="{{ room.id }}">
+
+                    Room {{ room.room_number }}
+                    -
+                    {{ room.room_type }}
+                    -
+                    ₹{{ room.price_per_night }}
+
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+            <small
+                id="roomMessage"
+                style="
+                    display:block;
+                    margin-top:8px;
+                    opacity:0.7;
+                "
+            >
+                Select your dates to check room availability.
+            </small>
+
+        </div>
+
+
+        <!-- Number of Guests -->
+
+        <div class="form-group">
+
+            <label for="number_of_guests">
+                Number of Guests
+            </label>
+
+            <input
+                type="number"
+                name="number_of_guests"
+                id="number_of_guests"
+                min="1"
+                value="1"
+                required
+            >
+
+        </div>
+
+
+        <!-- Actions -->
+
+        <div
+            style="
+                display:flex;
+                gap:12px;
+                margin-top:25px;
+            "
+        >
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                Create Booking
+            </button>
+
+            <a
+                href="{% url 'bookings' %}"
+                class="btn btn-secondary"
+            >
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<script>
+
+document.addEventListener(
+    'DOMContentLoaded',
+    function () {
+
+        const checkIn =
+            document.getElementById('check_in');
+
+        const checkOut =
+            document.getElementById('check_out');
+
+        const roomSelect =
+            document.getElementById('room');
+
+        const roomMessage =
+            document.getElementById('roomMessage');
+
+
+        /*
+        ---------------------------------------------------
+        Set minimum dates
+        ---------------------------------------------------
+        */
+
+        const today =
+            new Date().toISOString().split('T')[0];
+
+        checkIn.min = today;
+        checkOut.min = today;
+
+
+        /*
+        ---------------------------------------------------
+        Update checkout minimum date
+        ---------------------------------------------------
+        */
+
+        checkIn.addEventListener(
+            'change',
+            function () {
+
+                checkOut.min = checkIn.value;
+
+                if (
+                    checkOut.value &&
+                    checkOut.value <= checkIn.value
+                ) {
+
+                    checkOut.value = '';
+
+                }
+
+                loadAvailableRooms();
+
+            }
+        );
+
+
+        /*
+        ---------------------------------------------------
+        Check-out changed
+        ---------------------------------------------------
+        */
+
+        checkOut.addEventListener(
+            'change',
+            function () {
+
+                loadAvailableRooms();
+
+            }
+        );
+
+
+        /*
+        ---------------------------------------------------
+        Load available rooms
+        ---------------------------------------------------
+        */
+
+        function loadAvailableRooms() {
+
+            const checkInValue =
+                checkIn.value;
+
+            const checkOutValue =
+                checkOut.value;
+
+
+            if (
+                !checkInValue ||
+                !checkOutValue
+            ) {
+
+                roomSelect.innerHTML = `
+                    <option value="">
+                        Select check-in and check-out dates first
+                    </option>
+                `;
+
+                roomMessage.textContent =
+                    'Select your dates to check room availability.';
+
+                return;
+            }
+
+
+            if (
+                checkOutValue <= checkInValue
+            ) {
+
+                roomSelect.innerHTML = `
+                    <option value="">
+                        Invalid date range
+                    </option>
+                `;
+
+                roomMessage.textContent =
+                    'Check-out must be after check-in.';
+
+                return;
+            }
+
+
+            roomSelect.innerHTML = `
+                <option value="">
+                    Checking room availability...
+                </option>
+            `;
+
+
+            roomMessage.textContent =
+                'Checking available rooms...';
+
+
+            const url =
+                `{% url 'available_rooms' %}` +
+                `?check_in=${checkInValue}` +
+                `&check_out=${checkOutValue}`;
+
+
+            fetch(url)
+
+                .then(response => {
+
+                    if (!response.ok) {
+                        throw new Error(
+                            'Unable to check rooms.'
+                        );
+                    }
+
+                    return response.json();
+
+                })
+
+                .then(data => {
+
+                    roomSelect.innerHTML = '';
+
+
+                    if (
+                        !data.rooms ||
+                        data.rooms.length === 0
+                    ) {
+
+                        roomSelect.innerHTML = `
+                            <option value="">
+                                No rooms available
+                            </option>
+                        `;
+
+                        roomMessage.textContent =
+                            'No rooms are available for these dates.';
+
+                        return;
+                    }
+
+
+                    const defaultOption =
+                        document.createElement('option');
+
+                    defaultOption.value = '';
+
+                    defaultOption.textContent =
+                        'Select Room';
+
+                    roomSelect.appendChild(
+                        defaultOption
+                    );
+
+
+                    data.rooms.forEach(
+                        function (room) {
+
+                            const option =
+                                document.createElement('option');
+
+                            option.value =
+                                room.id;
+
+                            option.textContent =
+                                `Room ${room.room_number} - ` +
+                                `${room.room_type} - ` +
+                                `₹${room.price}`;
+
+                            roomSelect.appendChild(
+                                option
+                            );
+
+                        }
+                    );
+
+
+                    roomMessage.textContent =
+                        `${data.rooms.length} room(s) available for these dates.`;
+
+                })
+
+                .catch(error => {
+
+                    console.error(error);
+
+                    roomSelect.innerHTML = `
+                        <option value="">
+                            Unable to load rooms
+                        </option>
+                    `;
+
+                    roomMessage.textContent =
+                        'Unable to check room availability.';
+
+                });
+
+        }
+
+    }
+);
+
+</script>
+
+{% endblock %}
