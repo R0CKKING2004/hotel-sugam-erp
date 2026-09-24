@@ -1,11 +1,12 @@
+from datetime import datetime
+
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
 from django.http import JsonResponse
-from django.db.models import Sum
 from django.utils import timezone
-from datetime import date
+from django.db.models import Sum
 
 from .models import (
     Room,
@@ -47,10 +48,12 @@ def login_view(request):
             'Invalid username or password.'
         )
 
-    return render(request, 'login.html')
+    return render(
+        request,
+        'hotel_management/login.html'
+    )
 
 
-@login_required
 def logout_view(request):
 
     logout(request)
@@ -59,7 +62,8 @@ def logout_view(request):
 
 
 # =========================================================
-# DASHBOARD - PUBLIC
+# DASHBOARD
+# PUBLIC - recruiter can view without login
 # =========================================================
 
 def dashboard(request):
@@ -82,67 +86,172 @@ def dashboard(request):
 
     total_bookings = Booking.objects.count()
 
-    paid_revenue = (
-        Bill.objects
-        .filter(payment_status='Paid')
-        .aggregate(total=Sum('total_amount'))
-        ['total'] or 0
-    )
-
-    pending_revenue = (
-        Bill.objects
-        .filter(payment_status='Pending')
-        .aggregate(total=Sum('total_amount'))
-        ['total'] or 0
-    )
-
     today = timezone.localdate()
 
-    today_checkins = Booking.objects.filter(
+    # =====================================================
+    # TODAY'S ARRIVALS
+    # =====================================================
+
+    today_arrivals = Booking.objects.filter(
         check_in=today
-    ).count()
+    ).select_related(
+        'guest',
+        'room'
+    )
 
-    today_checkouts = Booking.objects.filter(
+    # =====================================================
+    # TODAY'S DEPARTURES
+    # =====================================================
+
+    today_departures = Booking.objects.filter(
         check_out=today
+    ).select_related(
+        'guest',
+        'room'
+    )
+
+    today_checkins = today_arrivals.count()
+
+    today_checkouts = today_departures.count()
+
+    # =====================================================
+    # REVENUE
+    # =====================================================
+
+    paid_revenue = Bill.objects.filter(
+        payment_status='Paid'
+    ).aggregate(
+        total=Sum('total_amount')
+    )['total'] or 0
+
+    pending_revenue = Bill.objects.filter(
+        payment_status='Pending'
+    ).aggregate(
+        total=Sum('total_amount')
+    )['total'] or 0
+
+    room_revenue = Bill.objects.filter(
+        payment_status='Paid'
+    ).aggregate(
+        total=Sum('room_charges')
+    )['total'] or 0
+
+    food_revenue = Bill.objects.filter(
+        payment_status='Paid'
+    ).aggregate(
+        total=Sum('food_charges')
+    )['total'] or 0
+
+    pending_bills = Bill.objects.filter(
+        payment_status='Pending'
     ).count()
 
-    occupancy_percentage = 0
+    # =====================================================
+    # OCCUPANCY
+    # =====================================================
 
     if total_rooms > 0:
+
         occupancy_percentage = round(
             (occupied_rooms / total_rooms) * 100,
             2
         )
 
+    else:
+
+        occupancy_percentage = 0
+
+    # =====================================================
+    # RECENT BOOKINGS
+    # =====================================================
+
+    recent_bookings = Booking.objects.select_related(
+        'guest',
+        'room'
+    ).order_by(
+        '-id'
+    )[:5]
+
+    # =====================================================
+    # RECENT FOOD ORDERS
+    # =====================================================
+
+    recent_food_orders = FoodOrder.objects.select_related(
+        'food_item',
+        'booking'
+    ).order_by(
+        '-order_date'
+    )[:5]
+
+    # =====================================================
+    # PAID BILLS
+    # =====================================================
+
+    paid_bills = Bill.objects.select_related(
+        'booking',
+        'booking__guest'
+    ).filter(
+        payment_status='Paid'
+    ).order_by(
+        '-id'
+    )[:5]
+
+    # =====================================================
+    # CONTEXT
+    # =====================================================
+
     context = {
+
         'total_rooms': total_rooms,
+
         'available_rooms': available_rooms,
+
         'occupied_rooms': occupied_rooms,
+
         'maintenance_rooms': maintenance_rooms,
-        'occupancy_percentage': occupancy_percentage,
 
         'total_guests': total_guests,
+
         'total_bookings': total_bookings,
 
-        'paid_revenue': paid_revenue,
-        'pending_revenue': pending_revenue,
-
+        # Numbers for dashboard cards
         'today_checkins': today_checkins,
+
         'today_checkouts': today_checkouts,
 
-        'today_arrivals': today_checkins,
-        'today_departures': today_checkouts,
+        # QuerySets for {% for %}
+        'today_arrivals': today_arrivals,
+
+        'today_departures': today_departures,
+
+        'paid_revenue': paid_revenue,
+
+        'pending_revenue': pending_revenue,
+
+        'room_revenue': room_revenue,
+
+        'food_revenue': food_revenue,
+
+        'pending_bills': pending_bills,
+
+        'occupancy_percentage': occupancy_percentage,
+
+        'recent_bookings': recent_bookings,
+
+        'recent_food_orders': recent_food_orders,
+
+        'paid_bills': paid_bills,
     }
 
     return render(
         request,
-        'dashboard.html',
+        'hotel_management/dashboard.html',
         context
     )
 
 
 # =========================================================
-# ROOMS - PUBLIC VIEW
+# ROOM MANAGEMENT
 # =========================================================
 
 def rooms(request):
@@ -153,7 +262,7 @@ def rooms(request):
 
     return render(
         request,
-        'rooms.html',
+        'hotel_management/rooms.html',
         {
             'rooms': room_list
         }
@@ -209,7 +318,7 @@ def add_room(request):
 
     return render(
         request,
-        'add_room.html'
+        'hotel_management/add_room.html'
     )
 
 
@@ -250,7 +359,7 @@ def edit_room(request, room_id):
 
     return render(
         request,
-        'edit_room.html',
+        'hotel_management/edit_room.html',
         {
             'room': room
         }
@@ -258,7 +367,7 @@ def edit_room(request, room_id):
 
 
 # =========================================================
-# GUESTS - PUBLIC VIEW
+# GUEST MANAGEMENT
 # =========================================================
 
 def guests(request):
@@ -269,7 +378,7 @@ def guests(request):
 
     return render(
         request,
-        'guests.html',
+        'hotel_management/guests.html',
         {
             'guests': guest_list
         }
@@ -298,7 +407,7 @@ def add_guest(request):
 
     return render(
         request,
-        'add_guest.html'
+        'hotel_management/add_guest.html'
     )
 
 
@@ -343,7 +452,7 @@ def edit_guest(request, guest_id):
 
     return render(
         request,
-        'edit_guest.html',
+        'hotel_management/edit_guest.html',
         {
             'guest': guest
         }
@@ -369,7 +478,7 @@ def delete_guest(request, guest_id):
 
 
 # =========================================================
-# BOOKINGS - PUBLIC VIEW
+# BOOKING MANAGEMENT
 # =========================================================
 
 def bookings(request):
@@ -377,16 +486,47 @@ def bookings(request):
     booking_list = Booking.objects.select_related(
         'guest',
         'room'
-    ).all().order_by(
+    ).order_by(
         '-id'
     )
 
+    total_bookings = booking_list.count()
+
+    confirmed_bookings = booking_list.filter(
+        status='Confirmed'
+    ).count()
+
+    checked_in = booking_list.filter(
+        status='Checked In'
+    ).count()
+
+    checked_out = booking_list.filter(
+        status='Checked Out'
+    ).count()
+
+    cancelled = booking_list.filter(
+        status='Cancelled'
+    ).count()
+
+    context = {
+
+        'bookings': booking_list,
+
+        'total_bookings': total_bookings,
+
+        'confirmed_bookings': confirmed_bookings,
+
+        'checked_in': checked_in,
+
+        'checked_out': checked_out,
+
+        'cancelled': cancelled,
+    }
+
     return render(
         request,
-        'bookings.html',
-        {
-            'bookings': booking_list
-        }
+        'hotel_management/bookings.html',
+        context
     )
 
 
@@ -426,11 +566,60 @@ def add_booking(request):
             id=room_id
         )
 
+        try:
+
+            check_in_date = datetime.strptime(
+                check_in,
+                '%Y-%m-%d'
+            ).date()
+
+            check_out_date = datetime.strptime(
+                check_out,
+                '%Y-%m-%d'
+            ).date()
+
+        except (TypeError, ValueError):
+
+            messages.error(
+                request,
+                'Please enter valid dates.'
+            )
+
+            return redirect('add_booking')
+
+        if check_out_date <= check_in_date:
+
+            messages.error(
+                request,
+                'Check-out date must be after check-in date.'
+            )
+
+            return redirect('add_booking')
+
+        overlapping_booking = Booking.objects.filter(
+            room=room,
+            status__in=[
+                'Confirmed',
+                'Checked In'
+            ],
+            check_in__lt=check_out_date,
+            check_out__gt=check_in_date
+        ).exists()
+
+        if overlapping_booking:
+
+            messages.error(
+                request,
+                'This room is already booked for the selected dates.'
+            )
+
+            return redirect('add_booking')
+
         Booking.objects.create(
             guest=guest,
             room=room,
-            check_in=check_in,
-            check_out=check_out,
+            check_in=check_in_date,
+            check_out=check_out_date,
             number_of_guests=number_of_guests,
             status='Confirmed'
         )
@@ -442,15 +631,19 @@ def add_booking(request):
 
         return redirect('bookings')
 
-    guests_list = Guest.objects.all()
+    guests_list = Guest.objects.all().order_by(
+        'name'
+    )
 
     rooms_list = Room.objects.filter(
         status='Available'
+    ).order_by(
+        'room_number'
     )
 
     return render(
         request,
-        'add_booking.html',
+        'hotel_management/add_booking.html',
         {
             'guests': guests_list,
             'rooms': rooms_list
@@ -458,20 +651,70 @@ def add_booking(request):
     )
 
 
+@login_required
 def available_rooms(request):
+
+    check_in = request.GET.get(
+        'check_in'
+    )
+
+    check_out = request.GET.get(
+        'check_out'
+    )
 
     rooms_list = Room.objects.filter(
         status='Available'
-    ).values(
-        'id',
-        'room_number',
-        'room_type',
-        'price_per_night'
     )
 
+    if check_in and check_out:
+
+        try:
+
+            check_in_date = datetime.strptime(
+                check_in,
+                '%Y-%m-%d'
+            ).date()
+
+            check_out_date = datetime.strptime(
+                check_out,
+                '%Y-%m-%d'
+            ).date()
+
+            booked_room_ids = Booking.objects.filter(
+                status__in=[
+                    'Confirmed',
+                    'Checked In'
+                ],
+                check_in__lt=check_out_date,
+                check_out__gt=check_in_date
+            ).values_list(
+                'room_id',
+                flat=True
+            )
+
+            rooms_list = rooms_list.exclude(
+                id__in=booked_room_ids
+            )
+
+        except ValueError:
+            pass
+
+    data = [
+
+        {
+            'id': room.id,
+            'room_number': room.room_number,
+            'room_type': room.room_type,
+            'price': str(room.price_per_night),
+        }
+
+        for room in rooms_list
+    ]
+
     return JsonResponse(
-        list(rooms_list),
-        safe=False
+        {
+            'rooms': data
+        }
     )
 
 
@@ -533,29 +776,90 @@ def edit_booking(request, booking_id):
 
     if request.method == 'POST':
 
-        booking.guest_id = request.POST.get(
-            'guest'
-        )
-
-        booking.room_id = request.POST.get(
-            'room'
-        )
-
-        booking.check_in = request.POST.get(
+        new_check_in = request.POST.get(
             'check_in'
         )
 
-        booking.check_out = request.POST.get(
+        new_check_out = request.POST.get(
             'check_out'
         )
 
-        booking.number_of_guests = request.POST.get(
+        number_of_guests = request.POST.get(
             'number_of_guests'
         )
 
-        booking.status = request.POST.get(
+        status = request.POST.get(
             'status'
         )
+
+        try:
+
+            check_in_date = datetime.strptime(
+                new_check_in,
+                '%Y-%m-%d'
+            ).date()
+
+            check_out_date = datetime.strptime(
+                new_check_out,
+                '%Y-%m-%d'
+            ).date()
+
+        except (TypeError, ValueError):
+
+            messages.error(
+                request,
+                'Please enter valid dates.'
+            )
+
+            return redirect(
+                'edit_booking',
+                booking_id=booking.id
+            )
+
+        if check_out_date <= check_in_date:
+
+            messages.error(
+                request,
+                'Check-out date must be after check-in date.'
+            )
+
+            return redirect(
+                'edit_booking',
+                booking_id=booking.id
+            )
+
+        # Check overlap with other bookings
+        overlapping_booking = Booking.objects.filter(
+            room=booking.room,
+            status__in=[
+                'Confirmed',
+                'Checked In'
+            ],
+            check_in__lt=check_out_date,
+            check_out__gt=check_in_date
+        ).exclude(
+            id=booking.id
+        ).exists()
+
+        if overlapping_booking:
+
+            messages.error(
+                request,
+                'This room is already booked for the selected dates.'
+            )
+
+            return redirect(
+                'edit_booking',
+                booking_id=booking.id
+            )
+
+        booking.check_in = check_in_date
+
+        booking.check_out = check_out_date
+
+        booking.number_of_guests = number_of_guests
+
+        booking.status = status
 
         booking.save()
 
@@ -572,7 +876,7 @@ def edit_booking(request, booking_id):
 
     return render(
         request,
-        'edit_booking.html',
+        'hotel_management/edit_booking.html',
         {
             'booking': booking,
             'guests': guests_list,
@@ -592,7 +896,9 @@ def cancel_booking(request, booking_id):
     booking.status = 'Cancelled'
 
     if booking.room.status == 'Occupied':
+
         booking.room.status = 'Available'
+
         booking.room.save()
 
     booking.save()
@@ -606,7 +912,7 @@ def cancel_booking(request, booking_id):
 
 
 # =========================================================
-# RESTAURANT - PUBLIC VIEW
+# RESTAURANT
 # =========================================================
 
 def restaurant(request):
@@ -620,7 +926,7 @@ def restaurant(request):
 
     return render(
         request,
-        'restaurant.html',
+        'hotel_management/restaurant.html',
         {
             'food_items': food_items
         }
@@ -647,18 +953,36 @@ def add_food_order(request, food_id):
             1
         )
 
+        try:
+
+            quantity = int(quantity)
+
+            if quantity <= 0:
+
+                raise ValueError
+
+        except (TypeError, ValueError):
+
+            messages.error(
+                request,
+                'Quantity must be a positive number.'
+            )
+
+            return redirect('restaurant')
+
         booking = None
 
         if booking_id:
-            booking = get_object_or_404(
-                Booking,
+
+            booking = Booking.objects.filter(
                 id=booking_id
-            )
+            ).first()
 
         FoodOrder.objects.create(
             booking=booking,
             food_item=food_item,
-            quantity=quantity
+            quantity=quantity,
+            status='Pending'
         )
 
         messages.success(
@@ -666,27 +990,11 @@ def add_food_order(request, food_id):
             'Food order added successfully.'
         )
 
-        return redirect('restaurant')
-
-    bookings_list = Booking.objects.filter(
-        status__in=[
-            'Confirmed',
-            'Checked In'
-        ]
-    )
-
-    return render(
-        request,
-        'add_food_order.html',
-        {
-            'food_item': food_item,
-            'bookings': bookings_list
-        }
-    )
+    return redirect('restaurant')
 
 
 # =========================================================
-# FOOD ORDERS - PUBLIC VIEW
+# FOOD ORDERS
 # =========================================================
 
 def food_orders(request):
@@ -695,24 +1003,22 @@ def food_orders(request):
         'food_item',
         'booking',
         'booking__guest'
-    ).all().order_by(
+    ).order_by(
         '-order_date'
     )
 
     return render(
         request,
-        'food_orders.html',
+        'hotel_management/food_orders.html',
         {
+            'food_orders': orders,
             'orders': orders
         }
     )
 
 
 @login_required
-def update_food_order_status(
-    request,
-    order_id
-):
+def update_food_order_status(request, order_id):
 
     order = get_object_or_404(
         FoodOrder,
@@ -721,22 +1027,32 @@ def update_food_order_status(
 
     if request.method == 'POST':
 
-        order.status = request.POST.get(
+        status = request.POST.get(
             'status'
         )
 
-        order.save()
+        valid_statuses = [
+            'Pending',
+            'Preparing',
+            'Completed',
+            'Cancelled'
+        ]
 
-        messages.success(
-            request,
-            'Food order status updated.'
-        )
+        if status in valid_statuses:
+
+            order.status = status
+
+            order.save()
+
+            messages.success(
+                request,
+                'Food order status updated.'
+            )
 
     return redirect('food_orders')
 
-
 # =========================================================
-# BILLING - PUBLIC VIEW
+# BILLING
 # =========================================================
 
 def billing(request):
@@ -745,16 +1061,51 @@ def billing(request):
         'booking',
         'booking__guest',
         'booking__room'
-    ).all().order_by(
+    ).order_by(
         '-id'
     )
 
+    total_bills = bills.count()
+
+    paid_bills_count = bills.filter(
+        payment_status='Paid'
+    ).count()
+
+    pending_bills_count = bills.filter(
+        payment_status='Pending'
+    ).count()
+
+    total_revenue = bills.filter(
+        payment_status='Paid'
+    ).aggregate(
+        total=Sum('total_amount')
+    )['total'] or 0
+
+    pending_amount = bills.filter(
+        payment_status='Pending'
+    ).aggregate(
+        total=Sum('total_amount')
+    )['total'] or 0
+
+    context = {
+
+        'bills': bills,
+
+        'total_bills': total_bills,
+
+        'paid_bills': paid_bills_count,
+
+        'pending_bills': pending_bills_count,
+
+        'total_revenue': total_revenue,
+
+        'pending_amount': pending_amount,
+    }
+
     return render(
         request,
-        'billing.html',
-        {
-            'bills': bills
-        }
+        'hotel_management/billing.html',
+        context
     )
 
 
@@ -779,35 +1130,34 @@ def create_bill(request, booking_id):
 
         return redirect('billing')
 
-    room_charges = 0
+    nights = (
+        booking.check_out -
+        booking.check_in
+    ).days
 
-    if booking.check_in and booking.check_out:
+    if nights <= 0:
+        nights = 1
 
-        nights = (
-            booking.check_out -
-            booking.check_in
-        ).days
-
-        if nights < 1:
-            nights = 1
-
-        room_charges = (
-            booking.room.price_per_night *
-            nights
-        )
-
-    food_charges = 0
-
-    food_orders = FoodOrder.objects.filter(
-        booking=booking
+    room_charges = (
+        booking.room.price_per_night *
+        nights
     )
 
-    for order in food_orders:
+    food_orders = FoodOrder.objects.filter(
+        booking=booking,
+        status='Completed'
+    ).select_related(
+        'food_item'
+    )
 
-        food_charges += (
+    food_charges = sum(
+        (
             order.food_item.price *
             order.quantity
-        )
+            for order in food_orders
+        ),
+        0
+    )
 
     total_amount = (
         room_charges +
@@ -840,11 +1190,28 @@ def pay_bill(request, bill_id):
 
     if request.method == 'POST':
 
-        bill.payment_status = 'Paid'
-
-        bill.payment_method = request.POST.get(
+        payment_method = request.POST.get(
             'payment_method'
         )
+
+        valid_payment_methods = [
+            'Cash',
+            'Card',
+            'UPI'
+        ]
+
+        if payment_method not in valid_payment_methods:
+
+            messages.error(
+                request,
+                'Please select a valid payment method.'
+            )
+
+            return redirect('billing')
+
+        bill.payment_status = 'Paid'
+
+        bill.payment_method = payment_method
 
         bill.payment_date = timezone.now()
 
@@ -852,7 +1219,7 @@ def pay_bill(request, bill_id):
 
         messages.success(
             request,
-            'Payment recorded successfully.'
+            'Payment completed successfully.'
         )
 
     return redirect('billing')
@@ -861,13 +1228,17 @@ def pay_bill(request, bill_id):
 def invoice(request, bill_id):
 
     bill = get_object_or_404(
-        Bill,
+        Bill.objects.select_related(
+            'booking',
+            'booking__guest',
+            'booking__room'
+        ),
         id=bill_id
     )
 
     return render(
         request,
-        'invoice.html',
+        'hotel_management/invoice.html',
         {
             'bill': bill
         }
@@ -875,18 +1246,18 @@ def invoice(request, bill_id):
 
 
 # =========================================================
-# STAFF - PUBLIC VIEW
+# STAFF MANAGEMENT
 # =========================================================
 
 def staff(request):
 
     staff_list = Staff.objects.all().order_by(
-        '-id'
+        'name'
     )
 
     return render(
         request,
-        'staff.html',
+        'hotel_management/staff.html',
         {
             'staff': staff_list
         }
@@ -920,7 +1291,7 @@ def add_staff(request):
 
     return render(
         request,
-        'add_staff.html'
+        'hotel_management/add_staff.html'
     )
 
 
@@ -973,9 +1344,9 @@ def edit_staff(request, staff_id):
 
     return render(
         request,
-        'edit_staff.html',
+        'hotel_management/edit_staff.html',
         {
-            'staff': staff_member
+            'staff_member': staff_member
         }
     )
 
@@ -999,59 +1370,106 @@ def delete_staff(request, staff_id):
 
 
 # =========================================================
-# REPORTS - PUBLIC VIEW
+# REPORTS
 # =========================================================
 
 def reports(request):
 
-    total_bookings = Booking.objects.count()
+    total_rooms = Room.objects.count()
+
+    available_rooms = Room.objects.filter(
+        status='Available'
+    ).count()
+
+    occupied_rooms = Room.objects.filter(
+        status='Occupied'
+    ).count()
 
     total_guests = Guest.objects.count()
 
-    total_rooms = Room.objects.count()
+    total_bookings = Booking.objects.count()
 
-    paid_revenue = (
-        Bill.objects
-        .filter(payment_status='Paid')
-        .aggregate(total=Sum('total_amount'))
-        ['total'] or 0
-    )
+    total_food_orders = FoodOrder.objects.count()
 
-    pending_revenue = (
-        Bill.objects
-        .filter(payment_status='Pending')
-        .aggregate(total=Sum('total_amount'))
-        ['total'] or 0
-    )
+    total_staff = Staff.objects.count()
 
-    room_revenue = (
-        Bill.objects
-        .filter(payment_status='Paid')
-        .aggregate(total=Sum('room_charges'))
-        ['total'] or 0
-    )
+    # =====================================================
+    # PAID REVENUE
+    # =====================================================
 
-    food_revenue = (
-        Bill.objects
-        .filter(payment_status='Paid')
-        .aggregate(total=Sum('food_charges'))
-        ['total'] or 0
-    )
+    total_revenue = Bill.objects.filter(
+        payment_status='Paid'
+    ).aggregate(
+        total=Sum('total_amount')
+    )['total'] or 0
+
+    # =====================================================
+    # ROOM REVENUE
+    # =====================================================
+
+    room_revenue = Bill.objects.filter(
+        payment_status='Paid'
+    ).aggregate(
+        total=Sum('room_charges')
+    )['total'] or 0
+
+    # =====================================================
+    # FOOD REVENUE
+    # =====================================================
+
+    food_revenue = Bill.objects.filter(
+        payment_status='Paid'
+    ).aggregate(
+        total=Sum('food_charges')
+    )['total'] or 0
+
+    # =====================================================
+    # PENDING REVENUE
+    # =====================================================
+
+    pending_amount = Bill.objects.filter(
+        payment_status='Pending'
+    ).aggregate(
+        total=Sum('total_amount')
+    )['total'] or 0
+
+    # =====================================================
+    # REPORT CONTEXT
+    # =====================================================
 
     context = {
-        'total_bookings': total_bookings,
-        'total_guests': total_guests,
+
         'total_rooms': total_rooms,
 
-        'paid_revenue': paid_revenue,
-        'pending_revenue': pending_revenue,
+        'available_rooms': available_rooms,
+
+        'occupied_rooms': occupied_rooms,
+
+        'total_guests': total_guests,
+
+        'total_bookings': total_bookings,
+
+        'total_food_orders': total_food_orders,
+
+        'total_staff': total_staff,
+
+        'total_revenue': total_revenue,
+
+        # IMPORTANT:
+        # reports.html expects these names
+        'paid_revenue': total_revenue,
+
+        'pending_revenue': pending_amount,
 
         'room_revenue': room_revenue,
+
         'food_revenue': food_revenue,
+
+        'pending_amount': pending_amount,
     }
 
     return render(
         request,
-        'reports.html',
+        'hotel_management/reports.html',
         context
     )
